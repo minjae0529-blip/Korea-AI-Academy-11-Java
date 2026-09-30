@@ -1,5 +1,7 @@
 package com.korai.ch04;
 
+import java.util.Arrays;
+
 public class ArrayMain04 {
     public static void main(String[] args) {
         //for문이 한줄이면 중괄호를 생략할 수 있다 !!
@@ -9,8 +11,9 @@ public class ArrayMain04 {
         for (int i = 0; i < nums.length; i++) {
             nums[i] = i + 1;
         }
-
+        System.out.println(nums);
         System.out.println(arrayToString(nums));
+        System.out.println(Arrays.toString(nums));
     }
 
     static String arrayToString(int[] arr) {
