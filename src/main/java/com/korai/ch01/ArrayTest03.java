@@ -8,9 +8,7 @@ public class ArrayTest03 {
         // false = 빈자리
         // true = 예약된 자리
         boolean[] seats = new boolean[10];
-
         Scanner sc = new Scanner(System.in);
-
         System.out.println("====== 앉으실 좌석을 선택하세요 ======");
 
         // 현재 좌석 상태 출력
