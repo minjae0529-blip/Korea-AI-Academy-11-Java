@@ -1,7 +1,7 @@
 # ☕ Korea-AI-Academy-11-Java
 
 대한민국인공지능아카데미 11기 **Java 기초 및 객체지향 프로그래밍(OOP)** 학습 및 실습 레포지토리입니다.  
-기본적인 자바 문법부터 JVM 메모리 구조, 객체지향 설계의 핵심 개념(클래스, 객체, 캡슐화, 생성자, 메서드 오버로딩 등)을 체계적으로 실습하고 기록합니다.
+기본적인 자바 문법부터 JVM 메모리 구조, 객체지향 설계의 핵심 개념(클래스, 캡슐화, 상속, 다형성, 추상 클래스, 인터페이스) 및 컬렉션 프레임워크(`List`)를 체계적으로 실습하고 기록합니다.
 
 ---
 
@@ -34,11 +34,14 @@ Korea-AI-Academy-11-Java/
 │   │   │   │   ├── ch05/                 # 제어문(if, for, while, break, continue) 및 연산자
 │   │   │   │   │   └── practice/         # 조건문/반복문 응용 실습 (구구단, 다차원 배열)
 │   │   │   │   ├── ch06/                 # 메서드(인스턴스/스태틱), 오버로딩, 생성자 기초
-│   │   │   │   ├── ch07/                 # 객체지향 심화 (final, 생성자 제어)
+│   │   │   │   ├── ch07/                 # 객체지향 심화: 추상화, 다형성, 인터페이스, List
+│   │   │   │   │   ├── AbstractMain01~06.java # 컬렉션 List, 추상 클래스, 다형성, super, 인터페이스
+│   │   │   │   │   ├── Practice01~04.java     # 다형성 응용 종합 실습 (탈것, 결제, 급여, 2차원 리스트)
+│   │   │   │   │   └── README.md             # Ch07 핵심 정리 노트 & 셀프 테스트
 │   │   │   │   └── study/                # JVM 메모리 구조 및 함수 개념 탐구
 │   │   └── resources/
 │   └── test/                             # 단위 테스트 디렉토리
-└── README.md                             # 프로젝트 문서
+└── README.md                             # 메인 프로젝트 문서
 ```
 
 ---
@@ -58,12 +61,25 @@ Korea-AI-Academy-11-Java/
 
 ### 3. 객체 지향 프로그래밍 (Object-Oriented Programming)
 - **클래스와 인스턴스**: 데이터 모델링 및 힙(Heap) 메모리 할당
-- **생성자 (Constructor)**: 기본 생성자(No-args Constructor), 매개변수 생성자, `this` 키워드 활용
-- **메서드 (Method)**: 인스턴스 메서드와 정적(`static`) 메서드의 차이 및 메서드 오버로딩(Overloading)
-- **캡슐화 (Encapsulation)**: `private` 접근 제어자와 `getter`/`setter`를 통한 데이터 보호
-- **Object 메서드**: `toString()` 오버라이딩을 통한 객체 정보 출력 형식 커스텀
+- **생성자 (Constructor) & `final`**: 기본 생성자, 매개변수 생성자, 필수 생성자, `this()` 생성자 체이닝, 불변 필드 관리
+- **메서드 (Method)**: 인스턴스 메서드 vs 정적(`static`) 메서드, 파라미터 타입/개수에 따른 메서드 오버로딩(Overloading)
+- **캡슐화 (Encapsulation)**: `private` 접근 제어자와 `getter`/`setter`를 통한 데이터 무결성 보장
+- **상속 (Inheritance) & `super`**: 클래스 상속(`extends`), 부모-자식 생성자 실행 순서, `super()` 및 `super.` 호출
+- **다형성 (Polymorphism)**:
+  - **업캐스팅(Upcasting)**: 부모 타입으로 자식 객체 참조, 동적 바인딩(Dynamic Binding)을 통한 오버라이딩 메서드 실행
+  - **다운캐스팅(Downcasting)**: 명시적 형변환 및 `ClassCastException` 예방을 위한 `instanceof` 타입 검사
+- **추상화 (Abstraction)**:
+  - **추상 클래스 (`abstract class`)**: 공통 속성/기능 상속 및 미완성 추상 메서드 규격화
+  - **인터페이스 (`interface`)**: 다중 구현(`implements`), 역할 분리, Java 8 `default` 메서드 활용
 
-### 4. JVM 메모리 구조 (JVM Memory Architecture)
+### 4. 자바 컬렉션 프레임워크 (Collections Framework)
+- **`List<E>` 인터페이스**: 순서가 있고 중복을 허용하는 선형 자료구조
+- **`ArrayList` vs `LinkedList`**: 배열 기반 빠른 검색($O(1)$) vs 노드 링크 기반 삽입/삭제 성능 특성 비교
+- **불변 리스트**: `List.of()`를 활용한 읽기 전용 리스트 생성
+- **다차원 컬렉션**: `List<List<E>>` 중첩 리스트를 활용한 2차원 가변 데이터 관리
+- **순회 기법**: 인덱스 기반 `for`문 vs 향상된 `for-each`문
+
+### 5. JVM 메모리 구조 (JVM Memory Architecture)
 - **Method Area (Class Area)**: 클래스 바이트코드 로딩, `static` 변수/메서드 공유 영역
 - **Heap Area**: `new` 키워드로 생성된 동적 인스턴스 및 배열이 위치하는 메모리
 - **Stack Area**: 메서드 호출 프레임, 지역 변수 및 참조 변수가 저장되는 영역
@@ -80,6 +96,14 @@ Korea-AI-Academy-11-Java/
 | `com.korai.ch05.ControlMain6` | 입력에 따라 기존 배열 크기를 늘리고 복사하는 동적 배열 관리 실습 |
 | `com.korai.ch06.Method02` | 다양한 파라미터 타입과 개수에 따른 메서드 오버로딩(`Parameter Overloading`) |
 | `ch03.access.AccessMain` | 접근 제어자(`private`, `public`, `default`)와 정보 은닉 |
+| `com.korai.ch07.AbstractMain04` | `instanceof` 타입 검사를 통한 안전한 다운캐스팅 및 고유 메서드 호출 |
+| `com.korai.ch07.AbstractMain06` | `interface` 구현체와 `List.of()` 기반 다형성 일괄 순회 제어 |
+| `com.korai.ch07.Practice01` | `Vehicle` 추상 클래스와 자식 클래스들의 다형성 컬렉션 관리 |
+| `com.korai.ch07.Practice02` | 결제 인터페이스(`default` 메서드 지원) 및 신용카드 다운캐스팅 실습 |
+| `com.korai.ch07.Practice03` | `final` 불변 필드와 생성자 체이닝, 직원 유형별 다형적 급여 정산 |
+| `com.korai.ch07.Practice04` | `List<List<String>>` 2차원 중첩 리스트를 활용한 마켓 카테고리 관리 |
+
+> 💡 **심화 학습 노트**: [👉 Ch07 객체지향 추상화 & 컬렉션 List 핵심 정리 노트 바로가기](src/main/java/com/korai/ch07/README.md)
 
 ---
 
@@ -105,4 +129,7 @@ mvn clean compile
 ```bash
 # 예시: UserMain 실행
 mvn exec:java -Dexec.mainClass="com.korai.ch05.UserMain"
+
+# 예시: Ch07 실습 실행
+mvn exec:java -Dexec.mainClass="com.korai.ch07.AbstractMain06"
 ```
