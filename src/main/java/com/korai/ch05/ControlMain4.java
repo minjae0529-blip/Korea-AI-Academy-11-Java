@@ -15,7 +15,6 @@ public class ControlMain4 {
         String input = scanner.nextLine();
         System.out.println(input);
 
-
         // try-with-resources를 사용하여 사용 후 스트림 자동 해제(close)
         try (FileReader fileReader = new FileReader("input.txt"); // 외부에서 가져오는거
              BufferedReader bufferedReader = new BufferedReader(fileReader)) {

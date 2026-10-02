@@ -46,13 +46,10 @@ class School {
     School(String name) {
         this.name = name;
     }
-
     School() {
 
     }
 }
-
-
 class Teacher {
     String name;
     int age;
@@ -63,5 +60,4 @@ class Teacher {
         this.age = age;
         this.address = address;
     }
-
 }

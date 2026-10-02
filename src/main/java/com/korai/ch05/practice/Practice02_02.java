@@ -11,7 +11,6 @@ public class Practice02_02 {
 
         System.out.println("몇명의 이름을 입력하실건가요?");
         inputNum = scanner.nextInt();
-        scanner.nextLine();
 
         String[] names = new String[inputNum];
 
