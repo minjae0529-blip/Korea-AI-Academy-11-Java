@@ -5,13 +5,13 @@ import java.util.List;
 
 public class AbstractMain04 {
     public static void main(String[] args) {
-        Dog3 dog = new Dog3();
-        Tiger3 tiger = new Tiger3();
+        Dog3 dog = new Dog3();      //dog라는 새로운 인스턴스 생성
+        Tiger3 tiger = new Tiger3(); // tiger라는 새로운 인스턴스 생성
         Animal3 animal = new Animal3();
-        Animal3 animal1 = dog;
+        Animal3 animal1 = dog;      //Animal3를 바라보고 있음.
         Animal3 animal2 = tiger;
 
-        animal1.move();
+        animal1.move(); //animal1에 있는 move라는 메서드 실행
         animal2.move();
 
         Dog3 animal1ToDog = (Dog3) animal1;

@@ -13,6 +13,7 @@ public class AbstractMain03 {
 
         animal1.move();
         animal2.move();
+
         List<Animal2> animals = new ArrayList<>();
         animals.add(new Dog2());
         animals.add(new Tiger2());

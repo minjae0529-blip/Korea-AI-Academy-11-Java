@@ -37,3 +37,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Python & Build Artifacts ###
+.venv/
+.fonts/
+*.pdf
+generate_pdf.py
+make_pdf.py

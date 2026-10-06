@@ -23,6 +23,7 @@ public class AbstractMain06 {
         }
     }
 }
+
 interface Sensor{
     void send();                //추상메서드
     void on();

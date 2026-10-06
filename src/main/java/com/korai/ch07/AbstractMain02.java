@@ -1,7 +1,5 @@
 package com.korai.ch07;
 
-import java.util.Timer;
-
 public class AbstractMain02 {
     public static void main(String[] args) {
         Dog dog = new Dog();

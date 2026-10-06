@@ -7,7 +7,7 @@ public class ToStringTest01 {
     }
 }
 
-class Student{
+ class Student{
     String name;
     int age;
     String address;
