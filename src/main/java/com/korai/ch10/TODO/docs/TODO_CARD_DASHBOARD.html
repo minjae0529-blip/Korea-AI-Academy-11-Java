@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TODO 어플리케이션 비전공자 1장 요약 마스터 카드</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    pre code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8 antialiased">
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Header Banner -->
+    <header class="bg-gradient-to-r from-blue-900 to-indigo-900 border border-blue-500/30 rounded-2xl p-6 shadow-xl">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold mb-2">Java 10장 • 최신 업데이트 반영</span>
+          <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">📋 TODO 어플리케이션 클래스별 1장 PDF 요약집</h1>
+          <p class="text-slate-300 text-sm mt-1">비전공자도 이해하기 쉬운 <b>현실 세계 비유(회원증, 장부, 출입증, 3색 스티커)</b> & 클래스당 1장 요약 카드</p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-center gap-2">
+          <a href="./TODO_APP_PRINTABLE_PDF.html" target="_blank" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow">
+            🖨️ 인쇄용 A4 PDF 보기
+          </a>
+          <a href="./TODO_APP_GUIDE.pdf" download class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow">
+            📥 PDF 파일 다운로드
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Layout Grid: Sidebar Tabs + Card Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Navigation Tabs (Left Column) -->
+      <nav class="lg:col-span-4 space-y-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-sm space-y-1.5">
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 mb-2">클래스 선택 (1장씩 보기)</h2>
+          
+          <div class="text-[11px] font-semibold text-sky-400 px-2 pt-1">🚀 실행 & 라우터</div>
+          <button onclick="selectCard('01')" id="btn-01" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between bg-blue-600 text-white shadow-sm">
+            <span>01. TodoApplication</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/40">회전목마 모터</span>
+          </button>
+          <button onclick="selectCard('07')" id="btn-07" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>07. RootRouter</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300">교통경찰/조립</span>
+          </button>
+
+          <div class="text-[11px] font-semibold text-emerald-400 px-2 pt-2">🖥️ View 계층 (화면)</div>
+          <button onclick="selectCard('02')" id="btn-02" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>02. View (인터페이스)</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">버튼 규격</span>
+          </button>
+          <button onclick="selectCard('03')" id="btn-03" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>03. LoginView</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">로그인 창구</span>
+          </button>
+          <button onclick="selectCard('04')" id="btn-04" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>04. TodoListView</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">게시판 창구</span>
+          </button>
+          <button onclick="selectCard('05')" id="btn-05" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>05. TodoRegisterView</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">메모 접수</span>
+          </button>
+          <button onclick="selectCard('06')" id="btn-06" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-amber-300 hover:bg-slate-700">
+            <span>06. TodoStatusView (NEW)</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">스티커 교체</span>
+          </button>
+
+          <div class="text-[11px] font-semibold text-amber-400 px-2 pt-2">⚙️ 서비스 & 보안</div>
+          <button onclick="selectCard('08')" id="btn-08" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>08. SecurityConfig</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300">출입증 발급</span>
+          </button>
+          <button onclick="selectCard('14')" id="btn-14" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>14. UserService</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">신분 검사관</span>
+          </button>
+          <button onclick="selectCard('15')" id="btn-15" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>15. TodoService</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">총괄 매니저</span>
+          </button>
+
+          <div class="text-[11px] font-semibold text-cyan-400 px-2 pt-2">🗄️ 저장소 & 엔티티</div>
+          <button onclick="selectCard('10')" id="btn-10" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-amber-300 hover:bg-slate-700">
+            <span>10. TodoStatus (NEW)</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">3색 스티커</span>
+          </button>
+          <button onclick="selectCard('09')" id="btn-09" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>09. User</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">회원 신분증</span>
+          </button>
+          <button onclick="selectCard('11')" id="btn-11" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>11. Todo</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">할 일 메모지</span>
+          </button>
+          <button onclick="selectCard('12')" id="btn-12" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>12. UserRepository</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300">회원 명부</span>
+          </button>
+          <button onclick="selectCard('13')" id="btn-13" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-between text-slate-300 hover:bg-slate-700">
+            <span>13. TodoRepository</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300">메모 보관함</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Main Display Area (Right Column) -->
+      <main id="card-display" class="lg:col-span-8 space-y-6">
+      </main>
+    </div>
+
+  </div>
+
+  <script>
+    const cardData = {
+      '01': {
+        title: '01. TodoApplication.java',
+        badge: 'Main Entry Point',
+        badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+        analogy: '🎡 현실 비유: 회전목마 모터 (끄기 전까지 화면을 계속 돌려주는 전원)',
+        reasons: [
+          { title: 'RootRouter.setUp() 1회 호출', desc: '자동차 시동 걸기 전 엔진, 바퀴, 핸들(Repo, Service, View)을 한 번에 조립해 두기 위함입니다.' },
+          { title: 'while (true) 무한 반복', desc: '콘솔 창이 1번 실행되고 바로 꺼지지 않도록 사용자가 끌 때까지 계속 화면을 유지합니다.' },
+          { title: 'RootRouter.getCurrentView().show()', desc: '메인은 화면이 무엇이든 몰라도 다형성으로 "화면 나와라!" 한 줄로 실행합니다.' }
+        ],
+        code: `package com.korai.ch10.TODO;
+
+import com.korai.ch10.TODO.router.RootRouter;
+
+public class TodoApplication {
+    public static void main(String[] args) {
+        // [이유 1]: 프로그램 시작 전 모든 부품 조립 완료!
+        RootRouter.setUp();
+
+        // [이유 2]: 화면이 꺼지지 않도록 대기하는 이벤트 루프
+        while (true) {
+            // [이유 3]: 다형성 호출로 현재 화면 한 줄 출력
+            RootRouter.getCurrentView().show();
+        }
+    }
+}`
+      },
+      '06': {
+        title: '06. TodoStatusView.java (🔥 NEW!)',
+        badge: 'New View Component',
+        badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+        analogy: '🏷️ 현실 비유: 스티커 교체 창구 (메모 번호를 골라 3색 스티커로 교체)',
+        reasons: [
+          { title: 'selectedTodoId 변수', desc: '사용자가 "몇 번 메모 수정할게요"라고 선택한 번호를 기억하기 위한 보관함입니다.' },
+          { title: 'try-catch (NumberFormatException)', desc: '숫자 대신 글자를 쳤을 때 프로그램이 죽지 않고 친절하게 재입력을 안내합니다.' },
+          { title: 'selectedTodoId == 0 검사', desc: '메모지를 고르지도 않고 상태부터 바꾸려고 하면 "먼저 TODO를 선택하세요"라고 방어합니다.' }
+        ],
+        code: `package com.korai.ch10.TODO.view;
+
+import com.korai.ch10.TODO.entity.Todo;
+import com.korai.ch10.TODO.entity.TodoStatus;
+import com.korai.ch10.TODO.router.RootRouter;
+import com.korai.ch10.TODO.service.TodoService;
+import java.util.List;
+import java.util.Scanner;
+
+public class TodoStatusView implements View {
+    private Scanner scanner;
+    private TodoService todoService;
+    private int selectedTodoId; // [이유 1]: 선택한 메모 번호 기억
+
+    public TodoStatusView(TodoService todoService) {
+        this.scanner = new Scanner(System.in);
+        this.todoService = todoService;
+    }
+
+    @Override
+    public void show() {
+        System.out.println("[ TODO STATUS 변경 ]");
+        if (selectedTodoId == 0) {
+            System.out.println("TODO를 선택하세요");
+        } else {
+            System.out.printf("[todoId : %d] TODO를 선택하셨습니다\\n", selectedTodoId);
+        }
+        showSelectList();
+    }
+
+    private void selectedTodo() {
+        List<Todo> todos = todoService.getTodoList();
+        if (todos == null || todos.isEmpty()) return;
+        for (Todo todo : todos) System.out.println(todo);
+
+        System.out.print("todoId선택 >>> ");
+        int todoId;
+        try {
+            // [이유 2]: 글자 입력 시 에러 방어
+            todoId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자를 입력하세요");
+            return;
+        }
+
+        boolean found = todos.stream().anyMatch(t -> t.getId() == todoId);
+        if (!found) { System.out.println("해당 TODO가 없습니다."); return; }
+        selectedTodoId = todoId;
+    }
+
+    private void modificationStatus(TodoStatus todoStatus) {
+        // [이유 3]: 미선택 방어
+        if (selectedTodoId == 0) {
+            System.out.println("먼저 TODO를 선택하세요");
+            return;
+        }
+        todoService.updateStatus(selectedTodoId, todoStatus);
+        System.out.printf("TODO ID [%d] : %s 상태변경완료\\n", selectedTodoId, todoStatus);
+    }
+
+    private void showSelectList() {
+        System.out.println("1. TODO 선택 | 2. 진행전 | 3. 진행중 | 4. 완료 | b. 뒤로가기");
+        System.out.print(">>> ");
+        String cmd = scanner.nextLine();
+        if ("1".equals(cmd)) selectedTodo();
+        else if ("2".equals(cmd)) modificationStatus(TodoStatus.todo);
+        else if ("3".equals(cmd)) modificationStatus(TodoStatus.inProgress);
+        else if ("4".equals(cmd)) modificationStatus(TodoStatus.done);
+        else if ("b".equals(cmd)) { selectedTodoId = 0; RootRouter.setCurrent("todo-list"); }
+    }
+}`
+      },
+      '08': {
+        title: '08. SecurityConfig.java (🔥 UPDATE)',
+        badge: 'Security & Session',
+        badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+        analogy: '🎫 현실 비유: 출입증 발급기 & 주머니 (출입증 발급 및 회원 번호 즉시 추출)',
+        reasons: [
+          { title: 'uuid + "@" + userId', desc: '난수 뒤에 회원 번호를 적어두어 출입증만 봐도 누구인지 바로 알 수 있습니다.' },
+          { title: 'getUserId() 메서드 신설 (NEW)', desc: '매번 복잡하게 문자열을 자르지 않고 getUserId() 한 줄로 회원 번호를 바로 꺼내 씁니다.' },
+          { title: 'static 전역 변수', desc: '프로그램 어디서든 편리하게 현재 로그인한 사람을 확인할 수 있습니다.' }
+        ],
+        code: `package com.korai.ch10.TODO.config;
+
+import com.korai.ch10.TODO.entity.User;
+import java.util.UUID;
+
+public class SecurityConfig {
+    private static String loginSession = null;
+
+    public static String getLoginSession() { return loginSession; }
+    public static void setLoginSession(String session) { SecurityConfig.loginSession = session; }
+
+    // [이유 1]: 중복 없는 난수 뒤에 '@회원번호'를 붙여 토큰 발급
+    public static String generateSessionToken(User user) {
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        return uuid + "@" + user.getId();
+    }
+
+    // [이유 2: NEW!]: 출입증에서 회원번호 숫자만 쏙 뽑아 리턴!
+    public static int getUserId() {
+        String token = loginSession;
+        return Integer.parseInt(token.substring(token.indexOf("@") + 1));
+    }
+}`
+      },
+      '10': {
+        title: '10. TodoStatus.java (🔥 NEW Enum!)',
+        badge: 'Domain Enum',
+        badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+        analogy: '🏷️ 현실 비유: 3색 상태 스티커 (딱 3가지만 붙일 수 있도록 규격화한 딱지)',
+        reasons: [
+          { title: '문자열 대신 enum 사용', desc: '"진행중", "진행 중" 같은 오타를 원천 차단하고 3가지 상태만 강제합니다.' },
+          { title: '한글 설명(status) 내장', desc: '화면에 찍을 때 "진행전", "진행중", "완료" 한국어 문구를 바로 꺼내 씁니다.' },
+          { title: 'toString() 오버라이딩', desc: '콘솔에 보기 좋게 상태가 찍히도록 오버라이드했습니다.' }
+        ],
+        code: `package com.korai.ch10.TODO.entity;
+
+public enum TodoStatus {
+    // [이유 1]: 딱 3가지 상태만 허용!
+    todo("진행전"), inProgress("진행중"), done("완료");
+
+    private String status;
+
+    // [이유 2]: 한글 문구 연결
+    TodoStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() { return status; }
+
+    @Override
+    public String toString() {
+        return "TodoStatus{status='" + status + "'}";
+    }
+}`
+      },
+      '13': {
+        title: '13. TodoRepository.java (🔥 UPDATE)',
+        badge: 'Repository Layer',
+        badgeColor: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+        analogy: '🗄️ 현실 비유: 할 일 보관함 & 번호표 기계 (번호표 찍고, 내 메모만 골라줌)',
+        reasons: [
+          { title: 'autoIncrement++', desc: '새 메모지가 들어올 때마다 번호표를 1씩 올려서 자동으로 찍어줍니다.' },
+          { title: 'findAllByUserId (NEW!)', desc: '남의 메모는 빼고 "내 회원 번호"와 일치하는 메모만 바구니에 골라 담아 돌려줍니다.' },
+          { title: 'updateStatus (NEW!)', desc: '번호표를 찾아 상태 스티커를 새것으로 교체해 줍니다.' }
+        ],
+        code: `package com.korai.ch10.TODO.repository;
+
+import com.korai.ch10.TODO.entity.Todo;
+import com.korai.ch10.TODO.entity.TodoStatus;
+import lombok.Getter;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TodoRepository {
+    private int autoIncrement = 1;
+    @Getter private List<Todo> todos;
+
+    public TodoRepository() { todos = new ArrayList<>(); }
+
+    public void insert(Todo todo) {
+        todo.setId(autoIncrement++);
+        todos.add(todo);
+    }
+
+    // [이유 2: NEW!]: 내 회원번호 메모만 필터링!
+    public List<Todo> findAllByUserId(int userId) {
+        List<Todo> filtered = new ArrayList<>();
+        for (Todo todo : todos) {
+            if (todo.getUser().getId() == userId) filtered.add(todo);
+        }
+        return filtered;
+    }
+
+    // [이유 3: NEW!]: 메모지 찾아 스티커 교체!
+    public void updateStatus(int todoId, TodoStatus todoStatus) {
+        for (Todo todo : todos) {
+            if (todo.getId() == todoId) {
+                todo.setStatus(todoStatus);
+                break;
+            }
+        }
+    }
+}`
+      },
+      '15': {
+        title: '15. TodoService.java (🔥 UPDATE)',
+        badge: 'Service Layer',
+        badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+        analogy: '🧑‍💼 현실 비유: 할 일 총괄 매니저 (출입증 확인, 메모 등록, 스티커 교체 지휘)',
+        reasons: [
+          { title: 'getTodoList() 진화 (NEW)', desc: '전체 목록 대신 SecurityConfig.getUserId()를 써서 내 할 일만 가져옵니다.' },
+          { title: 'register() 간결화 (NEW)', desc: 'getUserId()로 작성자를 찾아 초기 상태(TodoStatus.todo)로 깔끔하게 등록합니다.' },
+          { title: 'updateStatus() 추가 (NEW)', desc: '화면에서 스티커 교체 요청이 들어오면 보관함에 교체를 지시합니다.' }
+        ],
+        code: `package com.korai.ch10.TODO.service;
+
+import com.korai.ch10.TODO.config.SecurityConfig;
+import com.korai.ch10.TODO.entity.Todo;
+import com.korai.ch10.TODO.entity.TodoStatus;
+import com.korai.ch10.TODO.entity.User;
+import com.korai.ch10.TODO.repository.TodoRepository;
+import com.korai.ch10.TODO.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import java.util.List;
+
+@RequiredArgsConstructor
+public class TodoService {
+    private final TodoRepository todoRepository;
+    private final UserRepository userRepository;
+
+    // [이유 1: NEW!]: 내 출입증 번호로 '내 메모'만 골라옴!
+    public List<Todo> getTodoList() {
+        return todoRepository.findAllByUserId(SecurityConfig.getUserId());
+    }
+
+    // [이유 2: NEW!]: 내 번호로 회원을 찾아 '진행전' 상태로 등록!
+    public void register(String content) {
+        User foundUser = userRepository.findById(SecurityConfig.getUserId());
+        Todo todo = new Todo(0, TodoStatus.todo, content, foundUser);
+        todoRepository.insert(todo);
+    }
+
+    // [이유 3: NEW!]: 보관함에 스티커 교체 지시!
+    public void updateStatus(int todoId, TodoStatus todoStatus) {
+        todoRepository.updateStatus(todoId, todoStatus);
+    }
+}`
+      }
+    };
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function selectCard(id) {
+      const data = cardData[id] || cardData['01'];
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+        btn.classList.add('text-slate-300');
+      });
+      const activeBtn = document.getElementById('btn-' + id);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-300');
+        activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+      }
+
+      const reasonsHtml = data.reasons.map((r, i) => `
+        <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-3.5">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="w-5 h-5 rounded-full bg-blue-500/20 text-blue-300 flex items-center justify-center text-xs font-bold">${i + 1}</span>
+            <h4 class="text-sm font-semibold text-white">${r.title}</h4>
+          </div>
+          <p class="text-xs text-slate-300 pl-7 leading-relaxed">${r.desc}</p>
+        </div>
+      `).join('');
+
+      const html = `
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-md space-y-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-700 gap-3">
+            <div>
+              <span class="text-xs px-2.5 py-0.5 rounded-full border font-medium ${data.badgeColor}">${data.badge}</span>
+              <h2 class="text-xl md:text-2xl font-bold text-white mt-1.5">${data.title}</h2>
+              <p class="text-sm text-amber-300 font-medium mt-1">${data.analogy}</p>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="text-amber-400">📌</span> 왜 이렇게 코드를 짰는가? (비전공자 맞춤 핵심 이유)
+            </h3>
+            <div class="grid grid-cols-1 gap-2.5">
+              ${reasonsHtml}
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="text-blue-400">💻</span> 코드 전문 & 줄별 의도 주석
+            </h3>
+            <div class="relative bg-slate-950 rounded-xl p-4 border border-slate-800 overflow-x-auto text-xs leading-relaxed font-mono">
+              <pre class="text-slate-200"><code>${escapeHtml(data.code)}</code></pre>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('card-display').innerHTML = html;
+    }
+
+    selectCard('06');
+  </script>
+</body>
+</html>

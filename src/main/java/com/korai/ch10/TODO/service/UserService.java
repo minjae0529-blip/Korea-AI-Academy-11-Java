@@ -1,0 +1,28 @@
+package com.korai.ch10.TODO.service;
+
+import com.korai.ch10.TODO.config.SecurityConfig;
+import com.korai.ch10.TODO.entity.User;
+import com.korai.ch10.TODO.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Objects;
+
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public String login(String username, String password){
+        User foundUser = userRepository.findByUsername(username);
+        if(foundUser == null){
+            return null;
+        }
+        if(!Objects.equals(foundUser.getPassword(), password)){
+            return null;
+        }
+        return SecurityConfig.generateSessionToken(foundUser);
+    }
+}
