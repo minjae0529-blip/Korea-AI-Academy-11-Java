@@ -66,7 +66,7 @@ public class MemoView {
              */
             List<Memo> memos = memoService.getMemos();
 
-            if (memos == null || memos.isEmpty()) {
+            if (memos == null) {
                 System.out.println("등록된 메모가 없습니다.");
             } else {
                 for (Memo m : memos) {

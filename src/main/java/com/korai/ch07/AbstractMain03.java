@@ -29,7 +29,7 @@ class Animal2 {
 }
 
 class Dog2 extends Animal2 {
-    @Override // 어노테이션
+    @Override // 어노테이션 :
     void move() {
         System.out.println("많이움직인다");
     }
