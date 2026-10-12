@@ -9,7 +9,6 @@ public class Library {
     private List<Book> books;
     private int autoIncrement = 1;
     private final int capacity = 5;
-    private Scanner scanner;
 
     //  배열 생성자 선언과 초기화 
     public Library() {

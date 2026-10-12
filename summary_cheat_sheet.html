@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>자바 객체지향 핵심 요약 치트시트</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 12mm 15mm;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", sans-serif;
+      color: #1e293b;
+      line-height: 1.45;
+      font-size: 11.5px;
+      background: #fff;
+    }
+    .header {
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .subtitle {
+      font-size: 11px;
+      color: #64748b;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .full-width {
+      margin-bottom: 10px;
+    }
+    .card {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 10px;
+      background: #f8fafc;
+    }
+    .card-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #1e40af;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10.5px;
+      margin-top: 4px;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 4px 6px;
+      text-align: left;
+    }
+    th {
+      background: #e2e8f0;
+      font-weight: 700;
+      color: #334155;
+    }
+    code {
+      font-family: "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+      font-size: 10px;
+      background: #e2e8f0;
+      padding: 1px 4px;
+      border-radius: 3px;
+      color: #be185d;
+    }
+    pre {
+      font-family: "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+      font-size: 9.8px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 6px 8px;
+      border-radius: 4px;
+      line-height: 1.35;
+      overflow-x: hidden;
+      margin-top: 4px;
+    }
+    .hl-kw { color: #f43f5e; font-weight: bold; }
+    .hl-fn { color: #38bdf8; }
+    .hl-cm { color: #94a3b8; font-style: italic; }
+    .hl-str { color: #4ade80; }
+    .hl-cls { color: #fbbf24; }
+    
+    .qa-item {
+      margin-bottom: 5px;
+      padding-bottom: 5px;
+      border-bottom: 1px dashed #cbd5e1;
+    }
+    .qa-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .qa-q {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 11px;
+    }
+    .qa-a {
+      color: #334155;
+      font-size: 10.5px;
+      margin-top: 1px;
+    }
+    .badge {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <span class="title">📘 Java OOP 핵심 요약 치트시트</span>
+      <span class="badge">A4 1장 압축판</span>
+    </div>
+    <div class="subtitle">주차장 🅿️ | 도서관 📚 | 호텔 예약 🏨 실습 통합 정리</div>
+  </div>
+
+  <!-- 1. 계층 분리 패턴 -->
+  <div class="full-width card">
+    <div class="card-title">🏛️ 1. 객체지향 3단 분리 패턴 (우리가 만든 모든 시스템의 공통 구조)</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">계층 (Layer)</th>
+          <th style="width: 25%;">실제 세계 비유</th>
+          <th style="width: 22%;">실습 클래스 예시</th>
+          <th>핵심 역할 및 특징</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Model (데이터)</strong></td>
+          <td>자동차 1대, 책 1권, 방 1개</td>
+          <td><code>Car</code>, <code>Book</code>, <code>Room</code></td>
+          <td>자신의 고유 속성(번호, 이름)과 상태(<code>boolean</code>)만 보관. Getter/Setter.</td>
+        </tr>
+        <tr>
+          <td><strong>Manager (관리자)</strong></td>
+          <td>주차소장, 도서관사서, 호텔지배인</td>
+          <td><code>ParkingLot</code>, <code>Library</code>, <code>Hotel</code></td>
+          <td>장부(<code>List&lt;T&gt;</code>)를 쥐고 모든 규칙(정원 제한, 검색, 상태변경) 집행.</td>
+        </tr>
+        <tr>
+          <td><strong>App (화면/UI)</strong></td>
+          <td>안내 데스크 및 키오스크</td>
+          <td><code>ParkingApp</code>, <code>LibraryApp</code>, <code>HotelApp</code></td>
+          <td><code>Scanner</code> 입출력, 메뉴 반복. 직접 데이터 안 만지고 관리자에게 위임.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2. 핵심 4대 로직 공식 (2열 그리드) -->
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">① 등록 공식 (add / insert)</div>
+      <pre><span class="hl-kw">public void</span> <span class="hl-fn">add</span>(String type) {
+    <span class="hl-kw">if</span> (list.size() &gt;= capacity) { <span class="hl-cm">// 1. 정원 초과 검사</span>
+        System.out.println(<span class="hl-str">"정원 마감!"</span>); <span class="hl-kw">return</span>;
+    }
+    <span class="hl-cls">Room</span> r = <span class="hl-kw">new</span> <span class="hl-cls">Room</span>(autoId, type, <span class="hl-kw">false</span>); <span class="hl-cm">// 2. 객체 조립</span>
+    list.add(r);                           <span class="hl-cm">// 3. 리스트에 저장</span>
+    autoId++;                              <span class="hl-cm">// 4. 번호 1 증가</span>
+}</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title">② 검색 공식 (search / find)</div>
+      <pre><span class="hl-kw">public</span> <span class="hl-cls">Room</span> <span class="hl-fn">search</span>(<span class="hl-kw">int</span> targetNo) {
+    <span class="hl-kw">for</span> (<span class="hl-cls">Room</span> r : list) {           <span class="hl-cm">// 1. 하나씩 꺼내기</span>
+        <span class="hl-kw">if</span> (r.getNo() == targetNo) {<span class="hl-cm">// 2. 일치 비교 (문자는 .equals)</span>
+            <span class="hl-kw">return</span> r;               <span class="hl-cm">// 3. 찾으면 그 객체 즉시 반환!</span>
+        }
+    }
+    <span class="hl-kw">return null</span>;                    <span class="hl-cm">// 4. 다 찾아도 없으면 빈손</span>
+}</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title">③ 상태 변경 공식 (대출 / 체크인)</div>
+      <pre><span class="hl-kw">public void</span> <span class="hl-fn">checkIn</span>(<span class="hl-kw">int</span> targetNo) {
+    <span class="hl-cls">Room</span> r = search(targetNo);      <span class="hl-cm">// 1. 검색 재사용</span>
+    <span class="hl-kw">if</span> (r == <span class="hl-kw">null</span>) { <span class="hl-kw">return</span>; }       <span class="hl-cm">// 2. null 방어</span>
+    <span class="hl-kw">if</span> (r.isReserved()) { <span class="hl-kw">return</span>; } <span class="hl-cm">// 3. 이미 사용중 방어</span>
+
+    r.setReserved(<span class="hl-kw">true</span>);             <span class="hl-cm">// 4. Setter로 상태 변경!</span>
+    System.out.println(<span class="hl-str">"완료!"</span>);
+}</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title">④ 전체 조회 공식 (printAll)</div>
+      <pre><span class="hl-kw">public void</span> <span class="hl-fn">printAll</span>() {
+    <span class="hl-kw">for</span> (<span class="hl-cls">Room</span> r : list) {
+        System.out.println(r);       <span class="hl-cm">// toString()으로 출력</span>
+    }
+    <span class="hl-cm">// 남은 잔여 공간 = 전체 용량 - 현재 개수</span>
+    System.out.println(<span class="hl-str">"남은 자리: "</span> + (capacity - list.size()));
+}</pre>
+    </div>
+  </div>
+
+  <!-- 3. 핵심 Q&A 5문 5답 -->
+  <div class="full-width card">
+    <div class="card-title">💡 3. 가장 헷갈렸던 핵심 개념 5문 5답 (초보 탈출 포인트)</div>
+    
+    <div class="qa-item">
+      <div class="qa-q">Q1. 생성자 <code>public Hotel() { this.rooms = new ArrayList&lt;&gt;(); }</code> 왜 괄호를 비우고 쓸까?</div>
+      <div class="qa-a">👉 호텔 건물은 오픈할 때 <strong>빈 장부(리스트)를 딱 1번만 준비</strong>하면 끝납니다. 2번째, 3번째 손님이 온다고 건물을 부수고 다시 짓는(<code>new Hotel()</code>) 게 아니라, 지어진 건물의 메서드(<code>checkIn</code>)를 부르는 것이므로 밖에서 받아올 게 없습니다.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">Q2. <code>void</code> vs <code>return</code> 언제 구분해서 써야 할까?</div>
+      <div class="qa-a">👉 <strong>void (명령)</strong>: 화면에 찍고 끝날 때. main이 돌려받을 물건이 없음. | <strong>return (조회/질문)</strong>: "책 찾아와", "요금 계산해줘"처럼 <strong>main이 결과물(객체, 숫자)을 받아서 if문 등으로 후속 처리해야 할 때</strong>.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">Q3. <code>Book book = library.search("자바");</code> 의 진짜 의미는?</div>
+      <div class="qa-a">👉 <code>new</code>로 책을 새로 만든 게 아닙니다. 도서관 책장에 꽂혀있는 기존 책 객체를 찾아와서, 그 책을 <strong>가리키는 이름표(참조 변수)를 <code>book</code>으로 연결</strong>한 것입니다.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">Q4. 왜 <code>book.isBorrowed() = true;</code> 는 에러가 나고 <code>setBorrowed(true)</code> 를 써야 할까?</div>
+      <div class="qa-a">👉 <code>isBorrowed()</code>는 값을 꺼내보는 <strong>조회용(읽기 전용)</strong>입니다. <code>private</code> 변수의 상태를 바꿀 때는 반드시 값을 넘겨주는 <strong>Setter 메서드</strong>를 호출해야 합니다.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">Q5. <code>scanner.nextInt();</code> 뒤에 왜 항상 <code>scanner.nextLine();</code> 을 넣어야 할까?</div>
+      <div class="qa-a">👉 <code>nextInt()</code>는 숫자만 가져가고 <strong>엔터키(<code>\n</code>)를 버퍼에 남겨둡니다</strong>. 바로 다음 문자열 입력 시 그 남은 엔터를 읽어 입력을 건너뛰므로, <strong>엔터 청소기</strong>로 한 줄 비워줘야 합니다.</div>
+    </div>
+  </div>
+
+</body>
+</html>

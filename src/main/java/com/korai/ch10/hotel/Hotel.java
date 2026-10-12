@@ -20,10 +20,20 @@ public class Hotel {
             System.out.println("더 이상 방을 등록할 수 없습니다.");
             return;
         }
-        Room room = new Room(autoIncremet, type, false);
+        Room room = new Room(autoIncremet, false, type);
         rooms.add(room);
         System.out.println(autoIncremet + "호 (" + type + ") 등록 완료!");
         autoIncremet++;
+    }
+
+    //체크아웃
+    public void removeRoom(int roomNumber) {
+        for (int i = 0; i < rooms.size(); i++) {
+            if (rooms.get(i).getRoomNumber() == roomNumber) {
+                rooms.remove(i);
+                return;
+            }
+        }
     }
 
     //체크인
