@@ -72,7 +72,7 @@ class HomeView implements View {
         } else if ("L".equals(menu) || "l".equals(menu)) {
             StudentMain.pathIndex = 2; // L 입력 시 ListView(인덱스 2)로 이동
         } else {
-            System.out.println("다시 입력해주세요");
+            System.out.println("다시 입력해주 세요");
         }
     }
 }
