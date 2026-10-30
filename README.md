@@ -57,6 +57,20 @@ Korea-AI-Academy-11-Java/
 * **주요 내용**:
   * 콘솔 입력(`ScannerTest01`)과 1차원 `boolean` 배열을 결합한 **좌석 예약 시스템(`ArrayTest03`)** 구현.
   * 도메인 객체(`Movie`, `Author`, `Homeplus`)의 필드/메서드 설계 및 기초 문법 자가진단.
+* **💻 핵심 예제 코드 (`ArrayTest03.java` - 좌석 예약 원리)**:
+  ```java
+  boolean[] seats = new boolean[10]; // false: 빈자리(□), true: 예약됨(■)
+  Scanner sc = new Scanner(System.in);
+
+  int choiceNum = sc.nextInt();      // 사용자가 선택한 좌석 번호 (1~10)
+  // 배열 인덱스는 0부터 시작하므로 choiceNum - 1 로 접근!
+  if (seats[choiceNum - 1] == true) {
+      System.out.println("이미 예약된 좌석입니다.");
+  } else {
+      seats[choiceNum - 1] = true;   // 빈자리면 true로 상태 변경
+      System.out.println(choiceNum + "번 좌석 예약되었습니다.");
+  }
+  ```
 
 ---
 
@@ -64,10 +78,21 @@ Korea-AI-Academy-11-Java/
 * **핵심 키워드**: `Entity` - `Repository` - `Service` - `View`, **DI(Dependency Injection)**
 * **주요 내용**:
   * 클래스 내부에서 직접 `new`로 의존 객체를 생성하지 않고, **외부(`MemoApplication`)에서 생성자를 통해 주입**해 주는 구조.
+* **💻 핵심 예제 코드 (`MemoApplication.java`, `MemoService.java`)**:
   ```java
+  // 1) 외부(Application)에서 부품을 조립해서 넣어줌 (DI)
   MemoRepository repo = new MemoRepository();
   MemoService service = new MemoService(repo); // 저장소 주입(DI)
   MemoView view = new MemoView(service);       // 서비스 주입(DI)
+
+  // 2) Service는 밖에서 건네준 repo를 받아서 쓰기만 함
+  public class MemoService {
+      private final MemoRepository memoRepository;
+
+      public MemoService(MemoRepository memoRepository) {
+          this.memoRepository = memoRepository; // 외부에서 주입받은 객체 연결
+      }
+  }
   ```
 
 ---
@@ -80,6 +105,30 @@ Korea-AI-Academy-11-Java/
     * **Heap Area (`new`)**: 생성된 객체(인스턴스)가 실제로 저장되는 공간.
     * **Stack Area**: 메서드 호출 시 지역 변수와 참조 주소값이 저장되었다가 메서드 종료 시 사라지는 공간.
   * **캡슐화 (`access/`, `Visitor.java`)**: 필드는 `private`으로 외부 직접 접근을 막고, `getter/setter`나 검증 메서드(`moneyCheck`)를 통해서만 안전하게 값을 다루도록 설계.
+* **💻 핵심 예제 코드 (`StaticBasic.java` & `Visitor.java`)**:
+  ```java
+  // [1. static 공용 변수 vs 인스턴스 개인 변수]
+  class 학생관리시스템 {
+      static int 년도 = 2026; // Method Area에 딱 1개 생성 (모두가 공유)
+      static int 번호 = 1;    // 학생이 추가될 때마다 1, 2, 3... 공용 카운트 증가
+
+      static 학생 학생추가(String 이름) {
+          return new 학생(년도 * 10000 + 번호++, 이름); // new -> Heap 메모리에 학생 생성
+      }
+  }
+
+  // [2. 캡슐화: private으로 숨기고 메서드로 안전하게 접근]
+  public class Visitor {
+      private String name;    // 외부에서 visitor.haveMoney = -9999 처럼 직접 조작 불가!
+      private int haveMoney;
+
+      public void moneyCheck(int price) {
+          if (haveMoney < price) {
+              System.out.println("비용이 부족해 이용하실 수 없습니다");
+          }
+      }
+  }
+  ```
 
 ---
 
@@ -88,6 +137,17 @@ Korea-AI-Academy-11-Java/
 * **주요 내용**:
   * 배열은 생성 시 크기가 고정되며, 변수에는 배열의 실제 값이 아닌 **Heap 메모리 주소값**이 저장됨.
   * 1차원 및 다차원 배열 선언, 초기화, 반복문 순회 패턴 실습.
+* **💻 핵심 예제 코드 (`ArrayMain01.java` - 배열의 주소 참조 원리)**:
+  ```java
+  Student[] students = new Student[4];
+  students[0] = new Student();
+  students[0].name = "강민재";
+
+  // 배열 변수를 대입하면 값 복사가 아니라 '같은 Heap 메모리 주소'를 가리킴(얕은 복사)!
+  Student[] students2 = students;
+  students2[0].name = "이름변경";
+  // students[0].name 도 함께 "이름변경"으로 바뀜 (같은 집 주소를 바라보고 있으므로)
+  ```
 
 ---
 
@@ -96,6 +156,23 @@ Korea-AI-Academy-11-Java/
 * **주요 내용**:
   * **`switch ~ case` (`ControlMain2`)**: 일치하는 `case`로 바로 이동하며, `break`가 없으면 아래 `case`까지 연속 실행됨.
   * **동적 배열 확장 (`ControlMain6`)**: 고정 배열이 꽉 찼을 때 **더 큰 새 배열을 만들어 기존 데이터를 복사해 옮기는 원리** 구현 (`ArrayList`의 내부 동작 원리).
+* **💻 핵심 예제 코드 (`ControlMain6.java` - 배열 칸수 자동으로 늘리기)**:
+  ```java
+  String[] names = new String[0]; // 처음엔 0칸짜리 배열
+
+  // 새 이름을 추가할 때마다 기존보다 1칸 더 큰 새 배열을 생성!
+  String[] newNames = new String[names.length + 1];
+
+  // 1) 기존 배열에 있던 값들을 새 배열로 그대로 이사시킴
+  for (int i = 0; i < names.length; i++) {
+      newNames[i] = names[i];
+  }
+  // 2) 새로 생긴 마지막 빈칸에 새 데이터 넣기
+  newNames[newNames.length - 1] = "새이름";
+
+  // 3) names 변수가 새 배열의 주소를 가리키도록 교체 (헌 배열은 GC가 정리)
+  names = newNames;
+  ```
 
 ---
 
@@ -104,6 +181,29 @@ Korea-AI-Academy-11-Java/
 * **주요 내용**:
   * **메서드 오버로딩**: 메서드 이름은 같지만 **매개변수의 타입, 개수, 순서**를 다르게 정의하여 다양한 입력을 처리하는 기법.
   * **생성자 체이닝(`this()`)**: 생성자 안에서 다른 생성자를 호출해 초기화 코드 중복을 제거.
+* **💻 핵심 예제 코드 (`Method02.java` - 오버로딩과 생성자 `this()`)**:
+  ```java
+  // 1) 메서드 오버로딩: 이름은 add로 같지만 매개변수 구성이 다름
+  int add(int a, int b) { return a + b; }
+  int add(int a, int b, int c) { return a + b + c; }
+  double add(double a, double b) { return a + b; }
+
+  // 2) 생성자 체이닝: this()로 기존 생성자 재사용
+  class Student {
+      final int code;
+      final String name;
+      String address;
+
+      public Student(int code, String name) {
+          this.code = code;
+          this.name = name;
+      }
+      public Student(int code, String name, String address) {
+          this(code, name); // 위의 2개짜리 생성자를 먼저 호출! (코드 중복 제거)
+          this.address = address;
+      }
+  }
+  ```
 
 ---
 
@@ -118,6 +218,26 @@ Korea-AI-Academy-11-Java/
     * `abstract class`(`extends`): 공통 필드와 일반 메서드를 물려주면서 일부 추상 메서드 구현 강제 (단일 상속).
     * `interface`(`implements`): 구현 강제를 위한 기능 규격서, 다중 구현 가능 (`default` 메서드 지원).
   * 📖 상세 노트: [`src/main/java/com/korai/ch07/README.md`](file:///Users/kangminjae/Documents/gov/java/study/src/main/java/com/korai/ch07/README.md)
+* **💻 핵심 예제 코드 (`AbstractMain04~06.java` - 업캐스팅과 안전한 다운캐스팅)**:
+  ```java
+  abstract class Animal {
+      abstract void sound(); // 자식이 반드시 오버라이딩해야 하는 추상 메서드
+  }
+  class Dog extends Animal {
+      @Override void sound() { System.out.println("멍멍!"); }
+      void bark() { System.out.println("강아지 고유 기능: 꼬리 흔들기"); }
+  }
+
+  // 1) 업캐스팅: 부모 타입으로 자식 객체를 담음
+  Animal a = new Dog();
+  a.sound(); // "멍멍!" (동적 바인딩: 실제 자식 객체의 오버라이딩된 메서드가 실행됨)
+
+  // 2) 다운캐스팅: 자식 고유 메서드(bark)를 부르려면 instanceof 확인 후 형변환!
+  if (a instanceof Dog) {
+      Dog d = (Dog) a;
+      d.bark();
+  }
+  ```
 
 ---
 
@@ -127,6 +247,15 @@ Korea-AI-Academy-11-Java/
   * **`toString()`**: 객체 출력 시 메모리 주소 대신 내부 필드 값을 문자열로 보여주도록 오버라이딩.
   * **`==` vs `equals()`**: `==`는 두 객체의 **메모리 주소**가 같은지 비교하고, `equals()`는 객체 안의 **실제 데이터(값)**가 같은지 비교.
   * **`hashCode()`**: `equals()`가 `true`이면 `hashCode()` 값도 같아야 함 (`HashSet`, `HashMap`에서 중복 판별 기준).
+* **💻 핵심 예제 코드 (`Object02.java` - 주소 비교 vs 값 비교)**:
+  ```java
+  Student s1 = new Student("강민재", 26);
+  Student s2 = new Student("강민재", 26); // s1과 내용은 같지만 new로 새로 만든 다른 객체
+
+  System.out.println(s1 == s2);                  // false (힙 메모리 주소가 다름)
+  System.out.println(s1.equals(s2));             // true  (내부 필드 값이 같음)
+  System.out.println(s1.hashCode() == s2.hashCode()); // true  (Objects.hash("강민재", 26) 기반 동일한 해시값)
+  ```
 
 ---
 
@@ -135,6 +264,23 @@ Korea-AI-Academy-11-Java/
 * **주요 내용**:
   * **Lombok**: 어노테이션만으로 `Getter`, `Setter`, `toString`, `equals`, `hashCode`, 생성자를 자동 생성.
   * **역할 분리**: `Car`(데이터 엔티티) ↔ `CarRepository`(배열/리스트 저장 및 조회) ↔ `InitService`(비즈니스 처리).
+* **💻 핵심 예제 코드 (`Car.java` & `CarMain.java`)**:
+  ```java
+  @Data                 // Getter, Setter, toString, equals, hashCode 자동 생성!
+  @AllArgsConstructor   // 모든 필드를 받는 생성자 자동 생성
+  @NoArgsConstructor    // 기본 생성자 자동 생성
+  public class Car {
+      private Long id;
+      private String carNumber;
+      private String model;
+      private String owner;
+  }
+
+  // 실행부에서는 역할이 분리된 Repository의 메서드를 호출해 등록/삭제/출력
+  Car car = new Car(null, "15노 6810", "쏘나타Dn8", "강민재");
+  InitService.getCarRepository().insert(car);
+  InitService.getCarRepository().printAll();
+  ```
 
 ---
 
@@ -147,6 +293,24 @@ Korea-AI-Academy-11-Java/
     * `SecurityConfig`: 로그인 성공 시 `UUID@userId` 토큰을 발급해 내 할 일만 조회/등록.
     * `TodoStatus(Enum)`: 할 일 상태를 `[진행전 / 진행중 / 완료]` 3가지로 안전하게 제한.
   * **도메인 연습 3종**: 호텔 객실 관리(`hotel`), 도서관 대출/반납(`library`), 주차장 요금 정산(`parking`).
+* **💻 핵심 예제 코드 (`SingletonMain.java` - 싱글톤 공식 3단계)**:
+  ```java
+  class StudentService {
+      // 1) 유일한 객체를 담아둘 static 변수 선언
+      private static StudentService instance;
+
+      // 2) 외부에서 new StudentService()를 못 하도록 생성자를 private으로 잠금!
+      private StudentService() {}
+
+      // 3) 오직 이 static 메서드를 통해서만 단 1개의 객체를 꺼내갈 수 있음
+      public static StudentService getInstance() {
+          if (instance == null) {               // 최초 호출 시에만 딱 1번 생성
+              instance = new StudentService();
+          }
+          return instance;                      // 이후에는 이미 만들어진 객체 반환
+      }
+  }
+  ```
 
 ---
 
@@ -155,6 +319,25 @@ Korea-AI-Academy-11-Java/
 * **주요 내용**:
   * `HomeView`, `RegisterView`, `ListView`를 각각 싱글톤(`getHomeView()` 등)으로 만들어 `viewList`에 등록.
   * `while (running)` 루프 안에서 `viewList.get(pathIndex).show()`를 실행하고, 메뉴 선택에 따라 `pathIndex`(0, 1, 2)만 변경하여 화면을 전환하는 패턴.
+* **💻 핵심 예제 코드 (`StudentMain.java` - 인덱스 기반 화면 전환)**:
+  ```java
+  public class StudentMain {
+      public static int pathIndex = 0;      // 현재 보여줄 화면 번호 (0: 홈, 1: 등록, 2: 목록)
+      public static boolean running = true;
+
+      public static void main(String[] args) {
+          List<View> viewList = new ArrayList<>();
+          viewList.add(HomeView.getHomeView());         // index 0
+          viewList.add(RegisterView.getRegisterView()); // index 1
+          viewList.add(ListView.getListView());         // index 2
+
+          while (running) {
+              // pathIndex 번호만 바꾸면 다음 루프에서 해당 화면의 show()가 실행됨!
+              viewList.get(pathIndex).show();
+          }
+      }
+  }
+  ```
 
 ---
 
@@ -171,6 +354,31 @@ Korea-AI-Academy-11-Java/
   4. **중첩 컬렉션 & `entrySet()` (`CollectionMain09`)**:
      * `List<Map<String, Map<...>>>` 구조에서 `keySet()` 중첩 반복문과 `(Student)` 다운캐스팅으로 내부 객체 데이터 추출.
      * `Map.Entry<K, V>`와 `ages.entrySet()`을 사용해 Key와 Value를 동시에 순회.
+* **💻 핵심 예제 코드 (`CollectionMain02, 04, 09.java`)**:
+  ```java
+  // [1. CustomLinkedList의 노드(Node) 연결 구조]
+  class CustomLinkedList<E> {
+      private static class Node<E> {
+          E item;         // 실제 데이터
+          Node<E> next;   // 다음 노드의 주소를 가리키는 포인터
+      }
+      private Node<E> head;
+      private Node<E> tail;
+  }
+
+  // [2. 나만의 커스텀 예외 클래스 정의]
+  class 내가만든예외 extends RuntimeException {
+      public 내가만든예외(String message) {
+          super(message); // 부모(RuntimeException)에게 에러 메시지 전달
+      }
+  }
+
+  // [3. Map에서 entrySet()으로 Key와 Value 한 번에 꺼내기]
+  Map<String, Integer> ages = Map.of("강민재", 26, "강민재1", 27);
+  for (Map.Entry<String, Integer> entry : ages.entrySet()) {
+      System.out.println(entry.getKey() + " : " + entry.getValue());
+  }
+  ```
 
 ---
 
@@ -188,6 +396,26 @@ Korea-AI-Academy-11-Java/
      * **`Consumer<T>`**: `T -> void` (매개변수 소비, 반환값 X / `.accept(t)`)
      * **`Function<T, R>`**: `T -> R` (T를 받아 R로 변환 / `.apply(t)`)
      * **`Predicate<T>`**: `T -> boolean` (조건이 맞는지 판별 / `.test(t)`)
+* **💻 핵심 예제 코드 (`AnonymousClass02.java` & `Lambda02~03.java`)**:
+  ```java
+  // 1) 익명 클래스: 클래스를 따로 안 만들고 그 자리에서 바로 구현해서 생성
+  Button loginButton = new Button("로그인", new MouseEvent() {
+      @Override
+      public void click() {
+          System.out.println("로그인 되었습니다");
+      }
+  });
+
+  // 2) 람다식 축약: (매개변수) -> 반환식 (return과 {} 동시 생략!)
+  Calculator calc = (x, y) -> x + y;
+
+  // 3) 표준 함수형 인터페이스 5종 활용
+  Runnable runnable = () -> System.out.println("실행!");     // runnable.run()
+  Supplier<Integer> supplier = () -> 1000;                   // supplier.get() -> 1000
+  Consumer<String> consumer = msg -> System.out.println(msg);// consumer.accept("안녕")
+  Function<Integer, Integer> func = n -> n * 10;             // func.apply(5) -> 50
+  Predicate<Integer> isEven = n -> n % 2 == 0;               // isEven.test(4) -> true
+  ```
 
 ---
 
@@ -199,6 +427,32 @@ Korea-AI-Academy-11-Java/
     * `.filter(n -> 조건식)`: 조건(`Predicate`)이 `true`인 요소만 걸러냄.
     * `.map(n -> 변환식)`: 요소를 다른 값이나 DTO 객체(`User` → `UserDto`)로 변환(`Function`).
   * **`CustomStream<T>` 직접 구현 (`Stream03`)**: 제네릭 클래스에 `filter(Predicate<T>)`와 `map(Function<T, R>)`을 직접 만들어보며 스트림 체이닝 동작 원리 이해.
+* **💻 핵심 예제 코드 (`Stream02~03.java` - Stream 파이프라인 & `CustomStream` 내부 원리)**:
+  ```java
+  List<Integer> nums = List.of(5, 2, 10, 30, 22, 33, 50, 53);
+
+  // 1) filter로 5의 배수만 걸러내어 새 리스트로 만들기
+  List<Integer> fiveList = nums.stream()
+          .filter(n -> n % 5 == 0)                 // [5, 10, 30, 50] 통과
+          .toList();
+
+  // 2) map으로 데이터를 가공/변환하기 (User 엔티티 -> UserDto 변환 등)
+  List<UserDto> dtos = users.stream()
+          .filter(user -> user.getRole().getName().equals("ADMIN")) // 관리자만 필터링
+          .map(UserDto::from)                                       // User -> UserDto 변환
+          .toList();
+
+  // 3) 직접 만든 CustomStream의 filter 내부 구조
+  public CustomStream<T> filter(Predicate<T> predicate) {
+      List<T> newList = new ArrayList<>();
+      for (T item : list) {
+          if (predicate.test(item)) { // 람다 조건식이 true인 것만 새 리스트에 담음!
+              newList.add(item);
+          }
+      }
+      return new CustomStream<>(newList); // 체이닝을 위해 새 CustomStream 반환
+  }
+  ```
 
 ---
 
