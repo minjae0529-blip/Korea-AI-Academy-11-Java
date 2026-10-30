@@ -1,5 +1,7 @@
 package com.korai.serveltstudy2.database;
 
+import com.korai.serveltstudy2.entity.Menu;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,6 @@ public class DBConnectionTest {
 
         List<Menu> menus = new ArrayList<>();
 
-
         //커넥션 소멸시켜줘야 함, 그래야 다른 연결도 가능함 (객체소멸)/ try with resourse / close를 자돟ㅇ으로 해줌
         //DB랑 연결하는 것임
         try (Connection connection = DriverManager.getConnection(url, username, password);) {
@@ -34,6 +35,7 @@ public class DBConnectionTest {
             while (rs.next()) {
 
                 Menu menu = new Menu(
+                        //여기에 적는것들 mysql에서 실제 쓰는 컬럼명을 사용해야 함
                         rs.getInt("menu_id"),
                         rs.getInt("restaurant_id"),
                         rs.getString("name"),

@@ -490,6 +490,7 @@ Korea-AI-Academy-11-Java/
 
 ### 전체코드 ### 
 
+```java
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -570,6 +571,13 @@ public class DBConnectionTest2 {
 
     }
 }
+```
+
+### 3. 오늘 추가 실습: 싱글톤 `DatabaseProvider` & `Repository<T>` 분리 (`DBConfig`, `DatabaseProvider`, `MenuRepository`)
+* **`DBConfig.java`**: 접속 URL, 계정, 비밀번호를 `public static final` 상수로 한곳에서 관리.
+* **`DatabaseProvider.java`**: 싱글톤 패턴(`getInstance()`)으로 `DriverManager.getConnection()`을 제공하여 커넥션 생성 코드를 일원화.
+* **`Repository<T>` & `MenuRepository.java`**: 제네릭 인터페이스 `Repository<T>`(`findAll()`, `findById()`)를 정의하고, 싱글톤 `MenuRepository`에서 `DatabaseProvider`를 통해 `menus` 테이블 전체를 조회하여 `List<Menu>`로 반환.
+
 ---
 
 ## 🚀 실행 방법

@@ -1,4 +1,4 @@
-package com.korai.serveltstudy2.database;
+package com.korai.serveltstudy2.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
