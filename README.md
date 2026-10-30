@@ -488,6 +488,91 @@ Korea-AI-Academy-11-Java/
        }
        ```
 
+### 전체코드 ### 
+package com.korai.serveltstudy2.database;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DBConnectionTest2 {
+    public static void main(String[] args) {
+
+        //초기세팅 : protocol, host, port, username, password, databaseName 입력받기
+        //이걸 해줘야 찾아감
+        // -> [보충] 맞습니다! ("입력받기"보다는 접속에 필요한 설정값을 변수에 "저장(정의)"해두는 단계입니다.)
+        String protocol = "jdbc:mysql";
+        String host = "localhost";
+        String port = "3306";
+        String username = "root";
+        String password = "1q2w3e4r!";
+        String databaseName = "hanip_delivery02";
+
+        //String Format으로 한 번에 위에 값들 전달
+        // -> [보충] 결과적으로 "jdbc:mysql://localhost:3306/hanip_delivery02" 형태의 접속 주소(URL) 문자열이 만들어집니다.
+        String url = String.format("%s://%s:%s/%s", protocol, host, port, databaseName);
+
+        //객체로 담아서 출력하기 위해서 리스트에 출력하고자하는 것 넣고 새로운 List만들기
+        // -> [보충] DB에서 조회한 여러 행(Row)의 고객 데이터를 Customer 객체로 하나씩 만들어 담아둘 빈 바구니(ArrayList)를 미리 준비하는 것입니다.
+        List<Customer> customers = new ArrayList<>();
+
+
+        // [보충] try(...) 괄호 안에 Connection을 넣으면(try-with-resources 문법),
+        // 중괄호 블록이 끝날 때 자동으로 connection.close()가 호출되어 DB 연결 자원이 안전하게 반납됩니다.
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+            // [보충] 연결된 DB(connection)에 실행할 SQL 쿼리문을 미리 장착(준비)해 둔 객체가 PreparedStatement입니다.
+            // (아직 DB에서 쿼리가 실행된 상태는 아닙니다!)
+            PreparedStatement pstmt = connection.prepareStatement("""
+                            select 
+                                 *
+                            from
+                                customers
+                    """);
+
+            //밑에 코드는 잘 모르겠음
+            // -> [질문 답변]
+            // 1) pstmt.executeQuery() : 위에서 준비한 SELECT 쿼리를 실제로 MySQL 서버에 전송해서 "실행"하라는 명령입니다. (Workbench에서 번개 모양 버튼 누르는 것과 같음)
+            // 2) ResultSet rs : SELECT를 실행하고 나면 DB가 결과 표(테이블 모양의 데이터들)를 돌려주는데, 그 결과 표 전체를 자바에서 받아 담아두는 객체입니다.
+            //    처음에 rs는 첫 번째 행(Row) 바로 위(빈 공간, Before First)를 가리키는 커서(화살표)를 가지고 있습니다.
+            ResultSet rs = pstmt.executeQuery();
+
+            //sql 내부에서도 select 하게되면 반복하게 되니, for문보다 다음이 없으면 false가 되기때문에 while문을 활용해 로직작성
+            // -> [보충] 정확한 이해입니다!
+            //    rs.next()는 커서(화살표)를 다음 행(Row)으로 한 칸 내리는 역할과 동시에,
+            //    "데이터가 있으면 true, 더 이상 다음 행이 없으면 false"를 반환합니다.
+            //    총 몇 건이 조회될지 미리 알 수 없기 때문에 for문 대신 while(rs.next())를 사용합니다.
+            while (rs.next()){
+
+                //customer라는 객체에 값 전달 준비, 이때 sql내부에서 사용하는 컬럼명으로 해야 오류 안남
+                // -> [보충] 맞습니다! 현재 커서(rs)가 가리키고 있는 행(Row)에서 DB 컬럼명("customer_id" 등)을 기준으로 값을 꺼내와
+                //    자바의 Customer 객체로 조립(매핑)하는 과정입니다.
+                Customer customer = new Customer(
+                        rs.getInt("customer_id"),     // "customerId" -> "customer_id"
+                        rs.getString("name"),
+                        rs.getString("phone"),        // "phones" -> "phone"
+                        rs.getString("email"),
+                        rs.getString("birth_date"),   // "birthDate" -> "birth_date"
+                        rs.getString("district"),
+                        rs.getString("address"),
+                        rs.getString("grade"),
+                        rs.getString("joined_at")     // "joinedAt" -> "joined_at"
+                );
+
+                //customers 리스트에 담기
+                customers.add(customer);
+
+            }
+        } catch (SQLException e) {
+            // [보충] 주의할 점: DB 접속 실패뿐만 아니라, SQL 문법 오류나 컬럼명 오타 등
+            // try 블록 안의 모든 SQL 관련 에러가 전부 이 catch 블록으로 들어옵니다.
+            System.out.println("SQL서버 접속 실패 ");
+            e.printStackTrace();
+        }
+
+        customers.forEach(System.out::println);
+
+    }
+}
 ---
 
 ## 🚀 실행 방법
