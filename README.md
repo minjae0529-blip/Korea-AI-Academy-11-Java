@@ -248,3 +248,353 @@ mvn exec:java -Dexec.mainClass="com.korai.ch02.practice.MemoApplication"
 # [Ch10] 콘솔 Todo 앱 실행
 mvn exec:java -Dexec.mainClass="com.korai.ch10.TODO.TodoApplication"
 ```
+
+---
+
+# 🌐 Servlet & REST API & Filter 완전 정복 (전체 내용 총정리)
+
+---
+
+## 📚 [Step 0] 용어 사전: 이것만 알면 시작할 수 있다
+
+> 🍜 **식당 비유로 기억하기**
+> 손님(브라우저)이 주문서(요청)를 내면 → 매니저(톰캣)가 받아서 → 담당 요리사(서블릿)에게 넘기고 → 요리사가 접시(응답)에 음식을 담으면 → 매니저가 손님에게 가져다줍니다.
+
+| 용어 | 쉬운 뜻 | 식당 비유 |
+|---|---|---|
+| **클라이언트** | 서비스를 요청하는 쪽. 보통 **브라우저(크롬)** | 손님 |
+| **서버** | 요청을 받아 처리해주는 컴퓨터/프로그램 | 식당 |
+| **요청 (Request)** | 브라우저가 서버에 보내는 메시지. "이 주소 화면 주세요 + 추가 정보" | 주문서 |
+| **응답 (Response)** | 서버가 브라우저에 돌려주는 메시지. 보통 화면에 그릴 글자(HTML/JSON) | 음식이 담긴 접시 |
+| **HTTP** | 브라우저와 서버가 대화하는 **규칙**. 주문서 양식이라고 생각하면 됨 | 주문서 양식 |
+| **URL** | 주소. 예: `http://localhost:8080/servlet_study/hello` | 메뉴판의 메뉴 위치 |
+| **톰캣 (Tomcat)** | 요청을 받아서 알맞은 서블릿을 실행해주는 프로그램 (WAS) | 매니저 |
+| **서블릿 (Servlet)** | 요청을 처리하는 **자바 클래스**. 우리가 직접 작성하는 부분 | 요리사 |
+| **HTML / JSP** | 브라우저가 화면을 그릴 때 읽는 문서. `<h1>제목</h1>`처럼 **태그**로 감쌈 | 음식 담는 모양 |
+| **파라미터** | 요청에 같이 보내는 추가 정보. `?name=민재` 에서 이름 `name`, 값 `민재` | 주문서의 "맵기: 보통" 같은 메모 |
+| **어노테이션** | `@Override` 같은 **`@` 표시**. 컴퓨터에게 주는 메모. 서블릿에선 `@WebServlet`을 씀 | 요리사 이름표 |
+
+### 🔤 HTML 3분 속성 강의
+HTML은 **`<태그>내용</태그>`** 모양으로 씁니다. 여는 태그와 닫는 태그(`/` 붙음) 사이에 내용을 넣어요.
+```html
+<h1>큰 제목</h1>          <!-- h1 = heading 1 = 가장 큰 제목 글씨 -->
+<p>일반 문장</p>           <!-- p = paragraph = 문단 -->
+첫 줄<br>둘째 줄           <!-- br = 줄바꿈. 닫는 태그 없이 혼자 씀 -->
+<b>굵게</b>                <!-- b = bold = 굵은 글씨 -->
+<a href="/hello">이동</a>  <!-- a = 링크. 클릭하면 href에 적힌 주소로 이동 -->
+<!-- 이렇게 생긴 건 HTML 주석. 화면에 안 보임 (자바의 // 와 같음) -->
+```
+
+---
+
+## 📌 [Step 1] 첫 서블릿 & 생명주기 (Lifecycle)
+
+### 📖 개념 핵심
+1. **서블릿에는 `main()`이 없다**: 톰캣이 알아서 객체를 만들고(`new`), 요청이 오면 메서드를 호출해 줍니다. 우리는 "요청이 오면 할 일"만 메서드(`doGet`, `doPost`) 안에 적으면 됩니다.
+2. **상속 구조**:
+   ```text
+   HttpServlet (톰캣이 제공하는 부모 클래스, 기본 기능이 다 들어 있음)
+       ↑ extends (상속)
+   MyServlet   (내가 만드는 자식 클래스. 필요한 메서드만 @Override)
+   ```
+3. **생명주기 = 서블릿 객체의 일생**:
+
+| 순서 | 메서드 | 언제 호출? | 몇 번? | 식당 비유 |
+|---|---|---|---|---|
+| 1 | `init()` | 첫 요청이 왔을 때 객체 만든 직후 | **딱 1번** | 요리사 출근해서 앞치마 입기 (`BookService.getInstance()` 등 초기화) |
+| 2 | `doGet()` / `doPost()` | 요청이 올 때마다 | **요청마다 계속** | 주문 들어올 때마다 요리 |
+| 3 | `destroy()` | 톰캣이 꺼질 때 | **딱 1번** | 퇴근하며 정리 |
+
+4. **⚠️ 요리사는 딱 1명 (싱글톤과 동일!)**:
+   손님이 100명 와도 서블릿 **객체는 1개만** 만들어집니다. 따라서 **필드(클래스 맨 위 변수)에 손님 정보를 저장하면 손님끼리 데이터가 섞입니다.** 손님 정보는 항상 **메서드 안의 지역 변수**에 두어야 합니다.
+
+### 🛠️ 실습 1-1. 첫 서블릿 (`HelloServlet`)
+```java
+@WebServlet("/hello2")                    // "주소 끝이 /hello2인 요청은 이 클래스가 처리한다"는 이름표
+public class HelloServlet2 extends HttpServlet {   // HttpServlet을 상속받아야 톰캣이 서블릿으로 인정함
+
+    @Override
+    protected void doGet(HttpServletRequest req,    // req  = 톰캣이 만들어서 넘겨주는 주문서 (손님이 보낸 정보)
+                         HttpServletResponse resp)  // resp = 톰캣이 넘겨주는 빈 접시 (여기에 결과를 담음)
+            throws IOException {
+
+        resp.setContentType("text/html; charset=UTF-8");
+        // ↑ 브라우저에게 "지금 보내는 건 HTML이고, 글자는 UTF-8(한글 가능) 방식이야"라고 알려줌 (안 쓰면 한글 깨짐)
+
+        PrintWriter out = resp.getWriter();
+        // ↑ 접시(resp)에서 펜(PrintWriter)을 꺼냄.
+        //   System.out.println()은 IntelliJ 콘솔에 찍히고, out.println()은 브라우저 화면에 찍힘!
+
+        out.println("<h1>Hello Servlet!</h1>");
+        out.println("<p>지금 시간: " + java.time.LocalDateTime.now() + "</p>");
+    }
+}
+```
+
+### 🛠️ 실습 1-2. 생명주기 눈으로 확인하기 (`LifeServlet`)
+```java
+@WebServlet("/life")
+public class LifeServlet extends HttpServlet {
+    @Override
+    public void init() {                     // 객체가 처음 만들어진 직후 톰캣이 1번만 호출
+        System.out.println("[init] 요리사 출근!");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        System.out.println("[doGet] 주문 처리 중");  // 새로고침(요청) 할 때마다 콘솔에 찍힘
+        resp.getWriter().println("check console");
+    }
+
+    @Override
+    public void destroy() {                  // 톰캣이 꺼질 때 1번만 호출
+        System.out.println("[destroy] 요리사 퇴근!");
+    }
+}
+```
+
+---
+
+## 📌 [Step 2] 손님이 보낸 정보 받기 (파라미터, GET vs POST)
+
+### 📖 개념 핵심
+1. **파라미터 = 주문서에 적힌 메모 (`.../greet?name=민재&age=20`)**:
+   * `?` 뒤부터 파라미터 시작, `&`로 여러 개 연결.
+   * 서블릿에서 꺼낼 때:
+     ```java
+     String name = req.getParameter("name"); // "민재"
+     String age  = req.getParameter("age");  // "20" ← 숫자처럼 보여도 항상 String! 계산하려면 Integer.parseInt(age)
+     ```
+2. **HTML `<form>` 태그와 서블릿의 연결 고리**:
+   ```html
+   <form action="greet" method="get">   <!-- action: 어느 주소로 보낼지 / method: get 또는 post -->
+       <input type="text" name="name">   <!-- ⭐ input의 name="name"과 req.getParameter("name")이 똑같아야 함! -->
+       <button>보내기</button>
+   </form>
+   ```
+3. **GET vs POST 완벽 비교**:
+
+| 구분 | GET | POST |
+|---|---|---|
+| **데이터 위치** | 주소창 뒤에 `?name=민재`로 **보임** (Query String) | 주소창에 **안 보임** (HTTP Body 봉투 안에 넣어 전송) |
+| **언제 쓰나** | 검색, 목록 조회, 상세 페이지 보기 | 로그인, 회원가입, 글쓰기, 데이터 등록/수정 |
+| **서블릿 메서드** | `doGet()` | `doPost()` |
+| **비유** | 엽서 (누구나 내용을 봄) | 봉투에 넣은 편지 |
+
+4. **여러 개 선택하는 체크박스(`checkbox`) 받기**:
+   * `<input type="radio" name="gender" value="M">`: 하나만 선택되므로 `req.getParameter("gender")` (`"M"`이 옴, 화면 글자가 아니라 `value` 값이 전송됨!)
+   * `<input type="checkbox" name="hobby" value="game">`: 여러 개 선택 가능하므로 **`String[] hobbies = req.getParameterValues("hobby");`** (복수형 `s`, 아무것도 체크 안 하면 `null` 반환)
+   * 아예 없는 파라미터 이름을 꺼내면 `null`, 빈칸으로 제출하면 `""`(빈 문자열)이 오므로 `if (id == null || id.isBlank())`로 검증!
+
+---
+
+## 📌 [Step 3] 다른 페이지로 넘기기: `forward` vs `redirect` (MVC 패턴의 핵심!)
+
+### 📖 개념 핵심
+서블릿(Controller)이 처리를 마친 뒤 **JSP 화면(View)이나 다른 서블릿에게 일을 넘기는 방법**은 2가지입니다.
+
+| 구분 | `forward` (포워드) | `redirect` (리다이렉트) |
+|---|---|---|
+| **식당 비유** | 주방 안에서 몰래 B 요리사(JSP)에게 주문서를 넘김 | 손님에게 "B 창구로 다시 가세요"라고 안내함 |
+| **브라우저 요청 횟수** | **1번** (손님은 내부에서 넘어간 줄 모름) | **2번** (브라우저가 새 주소로 다시 요청함) |
+| **브라우저 주소창** | **안 바뀜** (`/book/list` 그대로 유지) | **바뀜** (`sendRedirect`에 적은 주소로 변경) |
+| **`req.setAttribute` 포스트잇** | **유지됨!** (같은 `req` 주문서를 그대로 넘기므로) | **사라짐!** (`null` 됨, 새 요청이라 주문서가 새로 만들어짐) |
+| **언제 쓰나** | **조회 화면(JSP) 보여줄 때** (`BookListViewController` 등) | **글쓰기/로그인/삭제 완료 후 목록이나 홈으로 이동시킬 때** |
+| **핵심 코드** | `req.getRequestDispatcher("/WEB-INF/views/book-list.jsp").forward(req, resp);` | `resp.sendRedirect("login.html");` |
+
+### 🛠️ `getParameter` vs `getAttribute` 차이
+* **`req.getParameter("key")`**: **손님(브라우저)**이 보낸 값. 읽기만 가능하며 무조건 `String`.
+* **`req.setAttribute("key", 값)` / `req.getAttribute("key")`**: **서블릿(요리사)**이 주문서에 붙이는 포스트잇. 다음 서블릿이나 JSP가 읽을 수 있으며 아무 객체(`Object`, `List<Book>` 등)나 붙일 수 있음.
+
+```java
+// [실제 프로젝트 예시: BookListViewController.java]
+@WebServlet("/book/list")
+public class BookListViewController extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // WEB-INF 폴더 안의 JSP는 브라우저에서 직접 주소로 접속할 수 없고, 오직 서블릿이 forward 해줄 때만 열림! (보안성)
+        req.getRequestDispatcher("/WEB-INF/views/book-list.jsp").forward(req, resp);
+    }
+}
+```
+
+---
+
+## 📌 [Step 4] 손님 기억하기: 세션(`HttpSession`)과 3대 보관소(Scope)
+
+### 📖 개념 핵심
+1. **세션(Session) = 손님별 사물함**:
+   * HTTP는 요청이 끝나면 손님을 잊어버리므로, 처음 온 손님에게 서버에 **사물함(`HttpSession`)**을 만들어주고 **사물함 열쇠 번호표(`JSESSIONID` 쿠키)**를 브라우저에게 줍니다.
+   * **사물함(데이터)은 서버에** 있고, 브라우저는 **번호표(`JSESSIONID`)만** 들고 다닙니다.
+2. **데이터 보관 장소 3가지 (Scope 비교)**:
+
+| 보관 장소 (Scope) | 비유 | 유지 기간 | 공유 범위 | 코드 |
+|---|---|---|---|---|
+| **`request`** | 주문서 포스트잇 | 요청 1번 끝나면 소멸 (`forward` 시에는 유지) | 해당 요청 1개 | `req.setAttribute("cnt", r)` |
+| **`session`** | **손님별 사물함** | 로그아웃(`invalidate`)하거나 30분간 안 오면 소멸 | **그 손님(같은 브라우저)만** | `req.getSession().setAttribute("loginId", id)` |
+| **`application`** | 식당 입구 공용 게시판 | 톰캣 서버가 꺼질 때까지 유지 | **접속한 모든 손님 공유** | `getServletContext().setAttribute("cnt", a)` |
+
+3. **세션 필수 코드 4줄**:
+   ```java
+   HttpSession session = req.getSession();                    // 1) 내 사물함 가져오기
+   session.setAttribute("loginId", "admin");                  // 2) 사물함에 넣기 (로그인 처리)
+   String loginId = (String) session.getAttribute("loginId"); // 3) 사물함에서 꺼내기 (Object -> String 다운캐스팅)
+   session.invalidate();                                      // 4) 사물함 통째로 비우기 (로그아웃 처리)
+   ```
+
+---
+
+## 📌 [Step 5] 실무형 JSON REST API 컨트롤러 & Jackson (`*ApiController`) 🌟
+
+과거에는 서블릿이 HTML/JSP를 직접 만들어 보냈지만, 현대 웹 개발(React/JS Fetch 연동)에서는 **데이터만 JSON 문자열로 주고받는 REST API 방식**을 사용합니다. (`servlet-jdbc-study` 실습 내용)
+
+### 📖 핵심 도구: `ObjectMapper` (Jackson 통역사)
+* **`mapper.readValue(req.getInputStream(), 클래스.class)`**: 프론트엔드가 보낸 **JSON 글자 → 자바 객체**로 자동 변환(역직렬화)!
+* **`mapper.writeValueAsString(자바객체)`** 또는 **`mapper.writeValue(resp.getWriter(), 자바객체)`**: **자바 객체/리스트 → JSON 글자**로 자동 변환(직렬화)하여 응답!
+
+### 🛠️ 실전 코드 1: 상품 목록 조회(GET) & 등록(POST) API (`ProductApiController.java`)
+```java
+@WebServlet("/api/products")
+public class ProductApiController extends HttpServlet {
+
+    // [GET] 자바의 List<Product>를 JSON 배열 문자열로 바꿔서 브라우저에 응답
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<Product> products = new ArrayList<>();
+        products.add(new Product("상품1", 10000));
+        products.add(new Product("상품2", 20000));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(products); // 리스트 -> JSON 문자열 변환
+
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        resp.getWriter().println(json);
+    }
+
+    // [POST] 프론트엔드가 보낸 JSON 데이터를 Product 자바 객체로 한 방에 읽기
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Product p = objectMapper.readValue(req.getInputStream(), Product.class); // JSON -> Product 객체 변환
+        System.out.println(p);
+    }
+}
+```
+
+### 🛠️ 실전 코드 2: 중복 예외 처리(`DuplicatedException`)와 상태 코드 응답 (`UserApiController.java`)
+```java
+@WebServlet("/api/users")
+public class UserApiController extends HttpServlet {
+    private UserService userService;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        userService = UserService.getInstance(); // 서블릿 출근(init) 시 싱글톤 서비스 연결
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User user = objectMapper.readValue(req.getInputStream(), User.class);
+
+        try {
+            userService.register(user); // 비즈니스 로직 실행 (중복 시 DuplicatedException 발생)
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().println(objectMapper.writeValueAsString(Map.of("message", "사용자 등록성공")));
+        } catch (DuplicatedException e) {
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            resp.setStatus(400); // 400 Bad Request 상태 코드 반환
+            resp.getWriter().println(objectMapper.writeValueAsString(Map.of("message", e.getMessage())));
+        }
+    }
+}
+```
+
+---
+
+## 📌 [Step 6] 서블릿 필터(`Filter`)와 CORS & `web.xml` 설정 🌟
+
+모든 서블릿마다 매번 `req.setCharacterEncoding("UTF-8")`과 CORS 허용 헤더를 복붙하는 것은 비효율적입니다. **서블릿에 들어가기 전(전처리)과 나온 후(후처리)에 공통 작업을 처리하는 문지기가 바로 `Filter`**입니다!
+
+### 1) 한글 인코딩 필터 (`Utf8EncodingFilter.java`)
+* `chain.doFilter(request, response);` **기준으로 위쪽이 전처리(서블릿 가기 전), 아래쪽이 후처리(서블릿 다녀온 후)**입니다.
+```java
+public class Utf8EncodingFilter implements Filter {
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        // [전처리] 서블릿에 도착하기 전에 미리 UTF-8 인코딩 세팅!
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        chain.doFilter(request, response); // 다음 필터 또는 목적지 서블릿으로 통과!
+
+        // [후처리] 서블릿 실행이 끝난 뒤 실행되는 영역
+    }
+}
+```
+
+### 2) CORS 허용 필터와 `OPTIONS` 정찰병 처리 (`CorsFilter.java`)
+* **CORS란?**: 프론트엔드(예: `localhost:5500` Live Server)와 백엔드(`localhost:8080` Tomcat)의 주소(포트)가 다르면 브라우저가 보안상 요청을 차단합니다. 서버가 **"외부에서 오는 요청도 허용한다(`Access-Control-Allow-Origin: *`)"**고 문을 열어주어야 합니다.
+* **왜 `OPTIONS` 메서드를 처리하나요? (Preflight 정찰병)**:
+  * 브라우저가 `POST`로 JSON 데이터를 보내기 전에, 먼저 **`OPTIONS`라는 정찰병 요청**을 보내서 "나 여기에 POST로 JSON 보내도 돼?"라고 사전 검사를 합니다. 이때 `200 OK`로 정찰병을 돌려보내 주어야 본 요청(`POST`)이 정상적으로 들어옵니다!
+```java
+public class CorsFilter implements Filter {
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
+        String method = req.getMethod();
+
+        // 1) CORS 허용 헤더 부착
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+        // 2) 브라우저가 보낸 사전 검사(OPTIONS 정찰병)면 바로 200 OK 주고 돌려보냄
+        if ("OPTIONS".equals(method)) {
+            resp.setStatus(200);
+            return;
+        }
+
+        chain.doFilter(request, response); // 본 요청(GET/POST)이면 서블릿으로 통과!
+    }
+}
+```
+
+### 3) `WEB-INF/web.xml` 필터 순서 매핑
+* `@WebFilter` 어노테이션을 쓰면 필터 실행 순서를 정하기 어렵지만, `web.xml`에 등록하면 **적힌 순서대로(인코딩 필터 → CORS 필터 → 서블릿)** 정확하게 실행됩니다.
+```xml
+<filter>
+    <filter-name>utf8EncodingFilter</filter-name>
+    <filter-class>com.korai.serveltstudy2.filter.Utf8EncodingFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>utf8EncodingFilter</filter-name>
+    <url-pattern>/api/*</url-pattern>
+</filter-mapping>
+
+<filter>
+    <filter-name>corsFilter</filter-name>
+    <filter-class>com.korai.serveltstudy2.filter.CorsFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>corsFilter</filter-name>
+    <url-pattern>/api/*</url-pattern>
+</filter-mapping>
+```
+
+---
+
+## 🧯 서블릿 에러 났을 때 보는 치트시트
+
+| 화면/콘솔 상태코드 | 뜻 | 확인할 것 |
+|---|---|---|
+| **404 Not Found** | 그런 주소(메뉴) 없음 | `@WebServlet("/주소")`와 브라우저 주소창 철자 비교, JSP/HTML 파일 위치 확인 |
+| **405 Method Not Allowed** | 그 방식(GET/POST/OPTIONS)은 처리 못함 | form/fetch의 `method`와 서블릿의 `doGet`/`doPost`/`doOptions`가 맞는지 확인 |
+| **500** + `NumberFormatException` | 숫자가 아닌 걸 `parseInt` 함 | 숫자 입력칸을 빈칸(`""`)으로 보냈는지 확인 |
+| **500** + `NullPointerException` | `null`인 변수를 사용함 | 파라미터 이름 오타 (HTML `name` 속성과 `getParameter("이름")` 비교) |
+| **CORS policy 차단 에러** | 포트/도메인이 달라 브라우저가 막음 | `CorsFilter`가 해당 경로에 적용되었는지, `OPTIONS` 요청에 200 응답을 주는지 확인 |
+| **한글이 `???`로 깨짐** | 인코딩 설정 누락 | `Utf8EncodingFilter` 적용 여부 또는 `setContentType("...;charset=UTF-8")` 확인 |
