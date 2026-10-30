@@ -85,7 +85,7 @@ class StringArrayList {
 
     // 값 삭제: 길이가 1 작은 새 배열을 만들어 삭제 대상만 빼고 복사
     public String remove(int index) {
-        String[] newArray = new String[list.length - 1];
+        String[] newArray = new String[list.length - 1];        //배열은 새로 추가하거나 제거하면 그 배열을 새로 만들고 붙혀야 함
         String removedValue = list[index];
         for (int i = 0; i < newArray.length; i++) {   // 새 배열 기준으로 반복
             if (i < index) {

@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Movie {
     public static void main(String[] args) {
-        String
+
     }
 }
 @NoArgsConstructor
@@ -42,19 +42,6 @@ class 영화관{
         return 12000;
     }
 
-    //티켓예매 :
-    public static 티켓예매(String 영화제목, int 나이){
-        if(남은좌석 < 0){
-            System.out.println("선태하신 영화에 좌석이 없습니다" + 영화제목 +"매진");
-            return null;
-        }
-
-        if(남은좌석 > 좌석번호){
-            System.out.println("선택하신 영화 예매가 성공하였습니다" + 영화제목);
-            남은좌석 --;
-        }
-        return ;
-    }
 
 
 }

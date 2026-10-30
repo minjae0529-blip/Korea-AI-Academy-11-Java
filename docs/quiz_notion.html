@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>☕ Korea-AI Java 실전 연습문제 워크스페이스</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    
+    * {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+
+    /* Notion Like Theme Styling */
+    :root {
+      --bg-main: #ffffff;
+      --bg-sidebar: #f7f6f3;
+      --bg-hover: #efeee9;
+      --border-color: #e9e9e7;
+      --text-primary: #37352f;
+      --text-secondary: #787774;
+      --callout-bg: #f1f1ef;
+      --code-bg: #282c34;
+      --code-text: #abb2bf;
+    }
+
+    .dark {
+      --bg-main: #191919;
+      --bg-sidebar: #202020;
+      --bg-hover: #2f2f2f;
+      --border-color: #303030;
+      --text-primary: #e6e6e6;
+      --text-secondary: #9b9a97;
+      --callout-bg: #252525;
+      --code-bg: #141414;
+      --code-text: #d4d4d4;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+    }
+
+    /* Code Editor Styling */
+    textarea.code-editor {
+      font-family: 'D2Coding', 'Fira Code', 'Consolas', monospace;
+      tab-size: 4;
+      white-space: pre;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(120, 119, 116, 0.3);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(120, 119, 116, 0.5);
+    }
+
+    .notion-toggle summary {
+      cursor: pointer;
+      list-style: none;
+    }
+    .notion-toggle summary::-webkit-details-marker {
+      display: none;
+    }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden text-[15px] antialiased">
+
+  <!-- ========================================================================= -->
+  <!-- 📂 SIDEBAR (Notion Style Navigation) -->
+  <!-- ========================================================================= -->
+  <aside id="sidebar" class="w-72 flex-shrink-0 flex flex-col justify-between border-r border-[var(--border-color)] bg-[var(--bg-sidebar)] transition-all duration-300">
+    <!-- Sidebar Header -->
+    <div class="p-3 border-b border-[var(--border-color)]">
+      <div class="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-[var(--bg-hover)] cursor-pointer">
+        <div class="flex items-center space-x-2.5 overflow-hidden">
+          <div class="w-6 h-6 rounded bg-amber-500 text-white flex items-center justify-center text-xs font-bold shadow-sm">☕</div>
+          <span class="font-semibold text-sm truncate">Korea-AI Java 학습실</span>
+        </div>
+        <button onclick="toggleDarkMode()" title="다크 모드 전환" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1 rounded hover:bg-[var(--bg-hover)] text-xs">
+          <i id="themeIcon" class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+
+      <!-- Quick Search -->
+      <div class="mt-2 relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-xs text-[var(--text-secondary)]"></i>
+        <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="챕터 또는 키워드 검색..." 
+               class="w-full bg-[var(--bg-main)] border border-[var(--border-color)] text-xs rounded-md pl-8 pr-2.5 py-1.5 text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-amber-500">
+      </div>
+
+      <!-- Overall Progress Bar -->
+      <div class="mt-3 px-1">
+        <div class="flex justify-between items-center text-xs text-[var(--text-secondary)] mb-1">
+          <span>전체 풀이 진행도</span>
+          <span id="progressPercent" class="font-medium text-amber-600 dark:text-amber-400">0%</span>
+        </div>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+          <div id="progressBar" class="bg-amber-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <div class="text-[11px] text-[var(--text-secondary)] mt-1 text-right">
+          <span id="solvedCount">0</span> / <span id="totalQuestionsCount">36</span> 문제 완료
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter List Navigation -->
+    <nav class="flex-1 overflow-y-auto p-2 space-y-0.5" id="chapterNavList">
+      <!-- Injected by JavaScript -->
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="p-3 border-t border-[var(--border-color)] text-xs text-[var(--text-secondary)] flex items-center justify-between">
+      <span class="flex items-center space-x-1.5">
+        <i class="fa-regular fa-user"></i>
+        <span>학습자: <b>강민재</b></span>
+      </span>
+      <button onclick="resetAllProgress()" class="text-[11px] text-red-500 hover:underline">진행 초기화</button>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 📖 MAIN CONTENT (Notion Page View) -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 flex flex-col h-full overflow-hidden bg-[var(--bg-main)]">
+    <!-- Top Bar -->
+    <header class="h-11 border-b border-[var(--border-color)] flex items-center justify-between px-6 text-xs text-[var(--text-secondary)] flex-shrink-0">
+      <div class="flex items-center space-x-2">
+        <button onclick="toggleSidebar()" class="p-1 hover:bg-[var(--bg-hover)] rounded text-[var(--text-secondary)]" title="사이드바 접기/펼치기">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <span class="text-gray-300 dark:text-gray-600">/</span>
+        <span id="breadcrumbChapter">Ch01. 자바 기초 & 누적 종합 복습</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button onclick="copyAllIntelliJCode()" class="flex items-center space-x-1.5 px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-medium transition shadow-sm">
+          <i class="fa-solid fa-code"></i>
+          <span>인텔리제이 실습 파일 복사</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Page Body (Scrollable) -->
+    <div class="flex-1 overflow-y-auto px-8 md:px-16 py-8" id="contentArea">
+      
+      <!-- Notion Cover & Title Header -->
+      <div class="mb-8">
+        <div id="pageIcon" class="text-5xl mb-3 select-none">🌱</div>
+        <h1 id="pageTitle" class="text-3xl font-bold tracking-tight text-[var(--text-primary)] mb-2">Ch01. 자바 기초 & 누적 종합 복습</h1>
+        <p id="pageDescription" class="text-[var(--text-secondary)] text-sm mb-4">키보드 입력(Scanner), 기본 1차원 배열, 다형성 및 Object 기초 실습</p>
+
+        <!-- Notion Callout Box -->
+        <div class="bg-[var(--callout-bg)] border border-[var(--border-color)] rounded-xl p-4 flex items-start space-x-3">
+          <div class="text-xl">💡</div>
+          <div class="text-xs leading-relaxed text-[var(--text-primary)]">
+            <div class="font-semibold mb-0.5">내 인텔리제이 원본 소스 및 핵심 개념</div>
+            <div id="pageCalloutText" class="text-[var(--text-secondary)]">
+              ScannerTest01.java, ArrayTest02.java, ArrayTest03.java, ClassMainTest01.java 기반
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions Container -->
+      <div id="questionsContainer" class="space-y-8 pb-20">
+        <!-- Questions Injected by JavaScript -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- 🧠 JAVASCRIPT & DATA (36 Practice Questions Ch01~Ch12) -->
+  <!-- ========================================================================= -->
+  <script>
+    const CHAPTERS_DATA = [
+      {
+        id: "ch01",
+        number: "Ch01",
+        title: "자바 기초 & 누적 종합 복습",
+        icon: "🌱",
+        desc: "키보드 입력(Scanner), 기본 1차원 배열 순회, 좌석 예약, Object 다형성",
+        sourceFiles: ["ScannerTest01.java", "ArrayTest02.java", "ArrayTest03.java", "ClassMainTest01.java"],
+        callout: "컴퓨터와의 첫 대화! 배열 인덱스는 0부터 시작한다는 원칙과 boolean 좌석표, 그리고 최상위 Object의 포용력을 다집니다.",
+        questions: [
+          {
+            id: "q1_1",
+            title: "문제 1. 짝수 필터링과 개수 구하기",
+            source: "ArrayTest02.java",
+            concept: "배열 순회 & 조건 분기 (%)",
+            type: "code",
+            instruction: "정수 배열 `numbers`가 주어졌을 때, 짝수만 카운트하여 총 개수를 반환하는 메서드를 작성하세요.",
+            starterCode: `public static int countEvens(int[] numbers) {\n    int count = 0;\n    // TODO: numbers 배열을 순회하여 짝수(num % 2 == 0)일 때 count를 증가시키세요.\n    \n    return count;\n}`,
+            solutionCode: `public static int countEvens(int[] numbers) {\n    int count = 0;\n    for (int num : numbers) {\n        if (num % 2 == 0) {\n            count++;\n        }\n    }\n    return count;\n}`,
+            hint: "향상된 for문 `for (int n : numbers)`과 나머지 연산자 `n % 2 == 0`을 사용합니다.",
+            explanation: "배열의 각 요소를 차례대로 검사하며 2로 나눈 나머지가 0인 값만 count 변수에 누적합니다."
+          },
+          {
+            id: "q1_2",
+            title: "문제 2. 영화관 좌석 예약 시스템",
+            source: "ArrayTest03.java",
+            concept: "boolean 배열 & 인덱스 매핑 (-1)",
+            type: "code",
+            instruction: "크기 10의 좌석 배열 `seats`(false=빈자리, true=예약됨)와 사용자가 고른 좌석 번호 `seatNum`(1~10)이 주어집니다. 이미 예약된 좌석이면 `false`를, 빈자리라면 `true`로 바꾼 뒤 `true`를 반환하세요.",
+            starterCode: `public static boolean reserveSeat(boolean[] seats, int seatNum) {\n    // TODO: 1) 배열 인덱스는 seatNum - 1 입니다.\n    // TODO: 2) 이미 true면 예약 불가(false 반환)\n    // TODO: 3) 빈자리(false)면 true로 변경 후 true 반환\n    return false;\n}`,
+            solutionCode: `public static boolean reserveSeat(boolean[] seats, int seatNum) {\n    int index = seatNum - 1;\n    if (seats[index]) {\n        return false;\n    }\n    seats[index] = true;\n    return true;\n}`,
+            hint: "사용자가 부르는 1번 좌석은 컴퓨터의 0번 인덱스입니다. `seats[seatNum - 1]`을 검사하세요.",
+            explanation: "실제 번호와 배열 인덱스 차이(offset 1)를 반영하고, 조건문으로 중복 예약을 원천 방지합니다."
+          },
+          {
+            id: "q1_3",
+            title: "문제 3. 번호별 메뉴 문자열 분기",
+            source: "ScannerTest01.java",
+            concept: "switch / if-else 제어 분기",
+            type: "code",
+            instruction: "입력된 `menuNum`이 1이면 '등록', 2이면 '조회', 3이면 '삭제', 그 외 번호는 '종료'를 반환하는 메서드를 작성하세요.",
+            starterCode: `public static String selectMenu(int menuNum) {\n    // TODO: switch 또는 if-else 문으로 문자열을 반환하세요.\n    return "";\n}`,
+            solutionCode: `public static String selectMenu(int menuNum) {\n    return switch (menuNum) {\n        case 1 -> "등록";\n        case 2 -> "조회";\n        case 3 -> "삭제";\n        default -> "종료";\n    };\n}`,
+            hint: "Java 14+ 최신 switch 표현식 `case 1 -> '등록';`을 쓰면 아주 간결합니다.",
+            explanation: "메뉴 입력에 따른 명확한 라우팅 분기를 연습합니다."
+          }
+        ]
+      },
+      {
+        id: "ch02",
+        number: "Ch02",
+        title: "함수 & 실전 미니 프로젝트 (의존성 주입 DI)",
+        icon: "⚡",
+        desc: "함수의 재사용성, 의존성 주입(DI), 번호표 기계(autoIncrement), 메모장 앱",
+        sourceFiles: ["Function.java", "Memo.java", "MemoRepository.java", "MemoService.java", "MemoView.java", "MemoApplication.java"],
+        callout: "요리사(Service)가 직접 텃밭에서 배추(Repository)를 기르지 않고 외부에서 싱싱한 배추를 손에 쥐여주는 원리가 바로 DI(Dependency Injection)입니다!",
+        questions: [
+          {
+            id: "q2_1",
+            title: "문제 1. 번호표 기계 (autoIncrement) 저장 로직",
+            source: "MemoRepository.java",
+            concept: "인메모리 저장소 & 고유 ID 자동 부여",
+            type: "code",
+            instruction: "새로운 `Memo` 객체가 전달되었을 때, `autoIncrement` 번호(1부터 시작)를 메모의 id로 설정하고 1 증가시킨 뒤 리스트에 저장하는 `save` 메서드를 작성하세요.",
+            starterCode: `public class MemoRepository {\n    private List<Memo> memoList = new ArrayList<>();\n    private int autoIncrement = 1;\n\n    public void save(Memo memo) {\n        // TODO: memo에 autoIncrement 번호를 부여하고 1 증가시킨 뒤 memoList에 추가하세요.\n    }\n}`,
+            solutionCode: `public void save(Memo memo) {\n    memo.setId(this.autoIncrement++);\n    memoList.add(memo);\n}`,
+            hint: "후위 증감 연산자 `this.autoIncrement++`를 사용하면 현재 번호를 세팅하고 바로 1이 증가합니다.",
+            explanation: "데이터베이스의 Auto Increment 기본키(PK) 메커니즘을 순수 자바 인메모리로 구현하는 핵심 원리입니다."
+          },
+          {
+            id: "q2_2",
+            title: "문제 2. 의존성 주입(DI) 3계층 조립 순서",
+            source: "MemoApplication.java",
+            concept: "Repository -> Service -> View 조립",
+            type: "code",
+            instruction: "하위 계층부터 차례대로 생성하여 의존성을 주입(DI)하는 `MemoApplication`의 메인 조립 코드를 완성하세요.",
+            starterCode: `// 1) 저장소(보관함) 인스턴스화\nMemoRepository repo = ____________;\n// 2) 서비스 매니저에게 저장소 주입\nMemoService service = ____________;\n// 3) 화면 창구에 서비스 매니저 주입\nMemoView view = ____________;`,
+            solutionCode: `MemoRepository repo = new MemoRepository();\nMemoService service = new MemoService(repo);\nMemoView view = new MemoView(service);`,
+            hint: "new MemoRepository() -> new MemoService(repo) -> new MemoView(service)",
+            explanation: "하위 계층 객체를 먼저 만들어서 상위 계층 생성자의 파라미터로 넘겨주는 방식이 바로 생성자 주입(Constructor Injection)입니다."
+          },
+          {
+            id: "q2_3",
+            title: "문제 3. 함수(Function)를 사용하는 본질적 이유",
+            source: "Function.java",
+            concept: "코드 재사용성과 캡슐화",
+            type: "quiz",
+            instruction: "프로젝트 `Function.java` 주석에 명시된 '함수를 정의하고 사용하는 목적 2가지'는 무엇일까요?",
+            options: [
+              "1. 메모리 용량 무제한 확장, 2. 실행 속도 10배 향상",
+              "1. 코드의 재사용성(중복 제거), 2. 일련의 작업을 도구처럼 깔끔하게 정리",
+              "2. 객체지향 문법 제거, 4. static 변수 강제 사용",
+              "1. 배열 길이 무제한 생성, 2. 가비지 컬렉터 중지"
+            ],
+            correctAnswer: 1,
+            hint: "반복적인 작업을 도구로 만들어 언제든 다시 꺼내 쓸 수 있게 정리하는 것입니다.",
+            explanation: "함수의 2대 핵심 가치는 바로 '중복 제거를 통한 재사용성'과 '가독성 높은 모듈화(정리)'입니다."
+          }
+        ]
+      },
+      {
+        id: "ch03",
+        number: "Ch03",
+        title: "JVM 메모리 구조 & 정보 은닉 (캡슐화)",
+        icon: "🧱",
+        desc: "Method Area(공용 게시판), Heap(공장), Stack(메모장), 접근 제어자, Visitor",
+        sourceFiles: ["MethodArea.java", "StaticBasic.java", "AccessMain.java", "User.java", "Visitor.java"],
+        callout: "마을의 공용 게시판(static/Method Area), 물건을 짓는 공장(Heap), 작업자의 개인 메모장(Stack)을 머릿속에 그리면 메모리 누수가 두렵지 않습니다.",
+        questions: [
+          {
+            id: "q3_1",
+            title: "문제 1. 놀이공원 방문객 소지금 음수 방지 캡슐화",
+            source: "Visitor.java",
+            concept: "private 필드 & 유효성 검증 setter",
+            type: "code",
+            instruction: "방문객의 `money` 필드가 외부에서 음수로 임의 조작되지 않도록 `private`으로 보호하고, 0원 미만의 값이 들어오면 '소지금은 음수가 될 수 없습니다.'를 출력하고 값을 바꾸지 않는 안전한 setter를 작성하세요.",
+            starterCode: `public class Visitor {\n    // TODO: 1) private int money 선언\n    \n    // TODO: 2) setMoney(int money) 메서드 구현\n    // (0 미만이면 출력 후 변경 방지, 0 이상이면 this.money에 대입)\n}`,
+            solutionCode: `public class Visitor {\n    private int money;\n\n    public void setMoney(int money) {\n        if (money < 0) {\n            System.out.println("소지금은 음수가 될 수 없습니다.");\n            return;\n        }\n        this.money = money;\n    }\n    public int getMoney() {\n        return this.money;\n    }\n}`,
+            hint: "조건문 `if (money < 0)`으로 방어 코드를 작성하고 `return;`으로 조기 탈출합니다.",
+            explanation: "외부에서 데이터를 직접 수정하지 못하게 막고 검증된 메서드(Setter)를 거치게 만드는 것이 객체지향의 '캡슐화(정보 은닉)'입니다."
+          },
+          {
+            id: "q3_2",
+            title: "문제 2. 공용 static 변수 vs 개인 인스턴스 변수",
+            source: "StaticBasic.java",
+            concept: "클래스 변수(static) 공유 원리",
+            type: "code",
+            instruction: "학생마다 이름(`name`)은 각자 다르고, 모든 학생이 공유하는 총 학생 누적 수(`totalStudents`)는 1개의 공용 게시판 변수로 동작해야 합니다. 필드 선언부를 작성하세요.",
+            starterCode: `class Student {\n    // TODO: 개인 이름 변수 선언\n    ________ String name;\n    \n    // TODO: 공용 총 학생 수 변수 선언\n    ________ int totalStudents;\n}`,
+            solutionCode: `class Student {\n    String name;                // 인스턴스 변수 (개인 사물함)\n    static int totalStudents;   // 클래스 변수 (공용 게시판)\n}`,
+            hint: "공용 변수는 `static` 키워드를 붙입니다.",
+            explanation: "static 변수는 Heap의 객체마다 생기는 것이 아니라 Method Area에 단 하나만 상주하며 모든 인스턴스가 같은 값을 공유합니다."
+          },
+          {
+            id: "q3_3",
+            title: "문제 3. JVM 메모리 3대 영역 매칭",
+            source: "MethodArea.java",
+            concept: "JVM Runtime Data Areas",
+            type: "quiz",
+            instruction: "메서드가 호출될 때 잠깐 생겼다가 메서드가 끝나면 프레임이 사라지는 지역 변수가 보관되는 영역은 어디일까요?",
+            options: [
+              "1. Method Area (스태틱 영역)",
+              "2. Heap Area (힙 영역)",
+              "3. Stack Area (스택 영역)",
+              "4. Constant Pool"
+            ],
+            correctAnswer: 2,
+            hint: "작업자가 쓰다가 작업 끝나면 찢어버리는 개인 메모장 비유를 기억하세요.",
+            explanation: "지역 변수와 매개변수는 메서드 실행 시 스택 프레임(Stack Frame)에 할당되고 메서드 종료 시 즉시 소멸합니다."
+          }
+        ]
+      },
+      {
+        id: "ch04",
+        number: "Ch04",
+        title: "배열 심화 (1차원 / 2차원 배열과 메모리 참조)",
+        icon: "📦",
+        desc: "배열의 메모리 할당, 기본값 초기화, 누적합 연산, 2차원 행렬 탐색",
+        sourceFiles: ["ArrayMain01.java", "ArrayMain02.java", "ArrayMain03.java", "ArrayMain04.java"],
+        callout: "배열의 본질은 크기가 고정된 계란판! new 키워드가 힙(Heap)에 연속된 방을 확보해 주는 과정을 이해합니다.",
+        questions: [
+          {
+            id: "q4_1",
+            title: "문제 1. 지역 변수 초기화와 누적합 구하기",
+            source: "ArrayMain04.java",
+            concept: "Stack Garbage 값 방지 & 누적합",
+            type: "code",
+            instruction: "정수 점수 배열 `scores`의 모든 점수 총합과 평균(double)을 구해 반환하는 메서드를 작성하세요.",
+            starterCode: `public static double getAverage(int[] scores) {\n    // TODO: 1) total을 반드시 0으로 초기화하세요.\n    // TODO: 2) 누적합을 구하고 double 형변환하여 평균을 반환하세요.\n    return 0.0;\n}`,
+            solutionCode: `public static double getAverage(int[] scores) {\n    int total = 0;\n    for (int score : scores) {\n        total += score;\n    }\n    return (double) total / scores.length;\n}`,
+            hint: "정수 나눗셈 `total / scores.length`는 소수점이 잘리므로 `(double) total`로 캐스팅해야 합니다.",
+            explanation: "지역 변수는 자동으로 0으로 초기화되지 않으므로 명시적 초기화가 필수이며, 나눗셈 시 실수 연산 타입 캐스팅에 주의해야 합니다."
+          },
+          {
+            id: "q4_2",
+            title: "문제 2. 2차원 대각선 요소의 합 계산",
+            source: "ArrayMain03.java",
+            concept: "2차원 배열 & 인덱스 규칙 찾기",
+            type: "code",
+            instruction: "3x3 정사각 행렬 `int[][] matrix`에서 행과 열의 번호가 일치하는 대각선 요소(matrix[0][0], matrix[1][1], matrix[2][2])들의 합을 구하세요.",
+            starterCode: `public static int sumDiagonal(int[][] matrix) {\n    int sum = 0;\n    // TODO: 단일 for문으로 대각선 원소 합을 구하세요.\n    return sum;\n}`,
+            solutionCode: `public static int sumDiagonal(int[][] matrix) {\n    int sum = 0;\n    for (int i = 0; i < matrix.length; i++) {\n        sum += matrix[i][i];\n    }\n    return sum;\n}`,
+            hint: "i가 0, 1, 2로 증가할 때 `matrix[i][i]`를 더해주면 이중 루프 없이 $O(N)$으로 끝납니다.",
+            explanation: "2차원 배열이라도 규칙성을 파악하면 단일 루프만으로 효율적인 탐색이 가능합니다."
+          },
+          {
+            id: "q4_3",
+            title: "문제 3. 배열 선언 및 초기화 문법 오류 찾기",
+            source: "ArrayMain02.java",
+            concept: "배열 리터럴 문법 규칙",
+            type: "quiz",
+            instruction: "다음 중 자바에서 컴파일 에러가 발생하는 배열 선언은 무엇일까요?",
+            options: [
+              "1. int[] arr1 = new int[5];",
+              "2. int[] arr2 = {1, 2, 3};",
+              "3. int[] arr3; arr3 = {10, 20, 30};",
+              "4. int[] arr4 = new int[]{10, 20, 30};"
+            ],
+            correctAnswer: 2,
+            hint: "선언과 초기화를 줄바꿈으로 분리할 때는 new int[]를 생략할 수 없습니다.",
+            explanation: "리터럴 중괄호 `{...}` 초기화는 오직 '선언과 동시에' 할 때만 허용됩니다. 선언 후 대입 시에는 `new int[]{...}`를 붙여야 합니다."
+          }
+        ]
+      },
+      {
+        id: "ch05",
+        number: "Ch05",
+        title: "제어문 응용 & 동적 배열 확장",
+        icon: "🔄",
+        desc: "if/switch, 3차원 구구단, 동적 배열 확장(+1칸 이사하기), 요소 삭제",
+        sourceFiles: ["ControlMain6.java", "ScannerTest.java", "Practice01.java", "Practice02_01.java"],
+        callout: "자바 배열의 한계를 극복하는 실무 원리: 방이 꽉 차면 더 큰 새 배열을 짓고 이전 주민들을 이사시킨다!",
+        questions: [
+          {
+            id: "q5_1",
+            title: "문제 1. 동적 배열 확장 (이사하기 원리)",
+            source: "ControlMain6.java",
+            concept: "고정 배열 -> 크기+1 새 배열 복사",
+            type: "code",
+            instruction: "정수 배열 `arr`에 새로운 정수 `newValue`를 맨 뒤에 추가한 새로운 크기(기존 길이 + 1)의 배열을 반환하는 메서드를 작성하세요.",
+            starterCode: `public static int[] append(int[] arr, int newValue) {\n    // TODO: 1) 기존 배열보다 1칸 더 큰 새 배열 생성\n    // TODO: 2) 기존 데이터들을 새 배열로 복사\n    // TODO: 3) 새 배열의 마지막 인덱스에 newValue 저장 후 반환\n    return null;\n}`,
+            solutionCode: `public static int[] append(int[] arr, int newValue) {\n    int[] newArr = new int[arr.length + 1];\n    for (int i = 0; i < arr.length; i++) {\n        newArr[i] = arr[i];\n    }\n    newArr[newArr.length - 1] = newValue;\n    return newArr;\n}`,
+            hint: "newArr[newArr.length - 1] = newValue;",
+            explanation: "자바의 ArrayList가 내부적으로 용량이 찰 때 새 배열을 할당해 데이터를 복사하는 방식의 원초적인 구현 원리입니다."
+          },
+          {
+            id: "q5_2",
+            title: "문제 2. 배열 특정 값 삭제 및 당기기",
+            source: "ScannerTest.java",
+            concept: "배열 필터링 & 크기-1 새 배열",
+            type: "code",
+            instruction: "배열 `arr`에서 `target` 값과 일치하는 요소를 제외하고 나머지 값들만 담은 새 배열을 반환하세요. (중복 없음 가정)",
+            starterCode: `public static int[] removeElement(int[] arr, int target) {\n    int[] result = new int[arr.length - 1];\n    int index = 0;\n    // TODO: arr을 순회하여 target이 아닌 값들만 result에 담으세요.\n    return result;\n}`,
+            solutionCode: `public static int[] removeElement(int[] arr, int target) {\n    int[] result = new int[arr.length - 1];\n    int index = 0;\n    for (int num : arr) {\n        if (num != target) {\n            result[index++] = num;\n        }\n    }\n    return result;\n}`,
+            hint: "if (num != target) result[index++] = num;",
+            explanation: "불필요한 데이터를 제외하고 유효한 데이터만 인덱스 카운터(`index++`)로 채워 넣는 기본 알고리즘입니다."
+          },
+          {
+            id: "q5_3",
+            title: "문제 3. 3차원 구구단 인덱스 매핑",
+            source: "Practice02_01.java",
+            concept: "3차원 배열 [단][곱][값]",
+            type: "quiz",
+            instruction: "구구단 3차원 배열이 `gugudan[단][곱하는수][값]`이고 2단이 인덱스 0부터 시작할 때, '8단 x 7 = 56'의 결과값에 접근하는 인덱스는?",
+            options: [
+              "1. gugudan[8][7][0]",
+              "2. gugudan[6][6][0]",
+              "3. gugudan[7][6][0]",
+              "4. gugudan[6][7][0]"
+            ],
+            correctAnswer: 1,
+            hint: "8단은 인덱스 8 - 2 = 6, 곱하는 수 7은 인덱스 7 - 1 = 6 입니다.",
+            explanation: "기준점(offset)이 2단부터 시작하므로 단 인덱스는 단 - 2 = 6이고, 곱 인덱스는 곱 - 1 = 6이 됩니다."
+          }
+        ]
+      },
+      {
+        id: "ch06",
+        number: "Ch06",
+        title: "메서드 & 생성자 체이닝 (this())",
+        icon: "🛠️",
+        desc: "인스턴스 vs static 메서드, 메서드 오버로딩, this() 생성자 체이닝",
+        sourceFiles: ["Method01.java", "Method02.java", "Method03.java"],
+        callout: "이름은 하나인데 일하는 방식은 여러 개!(오버로딩) 기본 주문서가 들어오면 기존 주문서를 재활용하는 것이 this() 생성자 체이닝입니다.",
+        questions: [
+          {
+            id: "q6_1",
+            title: "문제 1. this() 생성자 체이닝 작성",
+            source: "Method03.java",
+            concept: "중복 코드를 줄이는 생성자 재활용",
+            type: "code",
+            instruction: "이름(`name`), 나이(`age`), 학교(`school`)를 받는 생성자가 있을 때, 학교 이름을 전달받지 않은 경우 기본값으로 '한국고'를 넘겨주는 생성자 `Student(String name, int age)`를 `this(...)` 체이닝 1줄로 구현하세요.",
+            starterCode: `public class Student {\n    String name;\n    int age;\n    String school;\n\n    public Student(String name, int age, String school) {\n        this.name = name;\n        this.age = age;\n        this.school = school;\n    }\n\n    public Student(String name, int age) {\n        // TODO: this(...) 체이닝으로 1줄 작성\n    }\n}`,
+            solutionCode: `public Student(String name, int age) {\n    this(name, age, "한국고");\n}`,
+            hint: "생성자 첫 줄에 `this(name, age, '한국고');`를 호출합니다.",
+            explanation: "기존 생성자를 호출하여 초기화 로직의 중복을 제거하고 단일 진실 공급원(SSOT)을 유지합니다."
+          },
+          {
+            id: "q6_2",
+            title: "문제 2. 메서드 오버로딩(Overloading) 성립 여부 판별",
+            source: "Method02.java",
+            concept: "메서드 시그니처 (매개변수 타입/순서/개수)",
+            type: "quiz",
+            instruction: "`void print(String s, int n)`과 오버로딩이 성립하지 않아 컴파일 에러가 나는 것은?",
+            options: [
+              "1. void print(int n, String s)",
+              "2. void print(String s)",
+              "3. int print(String s, int n)",
+              "4. void print(String s, int n, boolean b)"
+            ],
+            correctAnswer: 2,
+            hint: "반환 타입(void, int)만 다른 것은 자바 컴파일러가 어떤 메서드를 부를지 구분할 수 없습니다.",
+            explanation: "오버로딩은 매개변수 목록(타입, 개수, 순서)으로만 구분합니다. 반환 타입만 다른 것은 중복 선언으로 컴파일 에러입니다."
+          },
+          {
+            id: "q6_3",
+            title: "문제 3. static 메서드의 제약 사항",
+            source: "Method01.java",
+            concept: "static context vs this/인스턴스 멤버",
+            type: "quiz",
+            instruction: "static 메서드 안에서 인스턴스 변수(`this.name`)를 직접 호출할 수 없는 이유는 무엇일까요?",
+            options: [
+              "1. static 메서드는 private으로만 선언되기 때문에",
+              "2. static 메서드가 메모리에 로딩되는 시점에는 new로 생성된 인스턴스가 아직 존재하지 않을 수 있기 때문에",
+              "3. static 메서드는 매개변수를 1개만 받을 수 있어서",
+              "4. JVM이 static 메서드를 실행할 때 힙을 모두 잠그기 때문에"
+            ],
+            correctAnswer: 1,
+            hint: "클래스 로딩 시점(공용 게시판)과 객체 생성 시점(new 공장 가동)의 차이를 생각하세요.",
+            explanation: "static 메서드는 인스턴스 없이 클래스 로딩 시점에 즉시 호출 가능하므로, 특정 인스턴스를 가리키는 `this` 참조가 존재하지 않습니다."
+          }
+        ]
+      },
+      {
+        id: "ch07",
+        number: "Ch07",
+        title: "객체지향 4대 원칙 & 다형성 컬렉션",
+        icon: "🚗",
+        desc: "추상 클래스 vs 인터페이스, 다운캐스팅(instanceof), 다형성 컬렉션 실습",
+        sourceFiles: ["Practice01.java", "Practice02.java", "Practice03.java", "Practice04.java"],
+        callout: "부모 타입(Vehicle)으로 묶어서 한 번에 달리고(drive), 진짜 비행기(Airplane)일 때만 날개를 펴는(flyHigh) 다형성의 아름다움!",
+        questions: [
+          {
+            id: "q7_1",
+            title: "문제 1. 탈것 다형성 순회 & 안전한 다운캐스팅",
+            source: "Practice01.java",
+            concept: "Upcasting & instanceof Pattern Matching",
+            type: "code",
+            instruction: "부모 `Vehicle` 리스트를 향상된 for문으로 돌면서 공통 `drive()`를 호출하고, 만약 `Car`면 `openTrunk()`를, `Airplane`이면 `flyHigh()`를 호출하는 안전한 코드를 작성하세요.",
+            starterCode: `public static void runVehicles(List<Vehicle> list) {\n    for (Vehicle v : list) {\n        // TODO: 1) v.drive() 호출\n        // TODO: 2) instanceof로 Car이면 openTrunk(), Airplane이면 flyHigh() 호출\n    }\n}`,
+            solutionCode: `public static void runVehicles(List<Vehicle> list) {\n    for (Vehicle v : list) {\n        v.drive();\n        if (v instanceof Car car) {\n            car.openTrunk();\n        } else if (v instanceof Airplane airplane) {\n            airplane.flyHigh();\n        }\n    }\n}`,
+            hint: "자바 16+ 패턴 매칭 `if (v instanceof Car car) car.openTrunk();`를 활용하면 명시적 캐스팅 `(Car)v`가 필요 없습니다.",
+            explanation: "다형성을 통해 공통 기능을 부모 규격으로 다루고, 세부 구현체의 고유 기능은 안전한 다운캐스팅으로 실행합니다."
+          },
+          {
+            id: "q7_2",
+            title: "문제 2. 결제 인터페이스 default 영수증 메서드",
+            source: "Practice02.java",
+            concept: "interface default method",
+            type: "code",
+            instruction: "결제 추상 메서드 `void pay(int amount);`와 함께 모든 결제 수단이 공통 출력할 수 있는 `default void printReceipt()` 메서드를 인터페이스 안에 정의하세요.",
+            starterCode: `public interface Payment {\n    void pay(int amount);\n\n    // TODO: default 키워드로 printReceipt() 구현 ('[영수증] 결제 완료' 출력)\n}`,
+            solutionCode: `public interface Payment {\n    void pay(int amount);\n\n    default void printReceipt() {\n        System.out.println("[영수증] 결제 완료");\n    }\n}`,
+            hint: "인터페이스 내부에서 본문 `{...}`을 가지는 메서드는 `default` 키워드를 붙여야 합니다.",
+            explanation: "Java 8부터 지원되는 default 메서드는 기존 구현체들을 깨뜨리지 않고 인터페이스에 공통 기본 기능을 추가할 수 있습니다."
+          },
+          {
+            id: "q7_3",
+            title: "문제 3. 2차원 중첩 리스트에서 데이터 꺼내기",
+            source: "Practice04.java",
+            concept: "List<List<String>> 행/열 접근",
+            type: "code",
+            instruction: "`List<List<String>> marketList`에서 2번 카테고리(야식메뉴)의 1번 인덱스 상품을 꺼내 반환하는 코드를 한 줄로 작성하세요.",
+            starterCode: `public static String getItem(List<List<String>> marketList) {\n    // TODO: get().get() 체이닝으로 2번 행 1번 열 꺼내기\n    return "";\n}`,
+            solutionCode: `public static String getItem(List<List<String>> marketList) {\n    return marketList.get(2).get(1);\n}`,
+            hint: "`marketList.get(2).get(1);`",
+            explanation: "외부 리스트의 요소가 다시 리스트인 구조이므로 2단계 `.get()` 호출을 통해 데이터에 도달합니다."
+          }
+        ]
+      },
+      {
+        id: "ch08",
+        number: "Ch08",
+        title: "Object 클래스 완전 정복",
+        icon: "🧬",
+        desc: "getClass(), instanceof, toString(), 동일성(==) vs 동등성(equals), hashCode",
+        sourceFiles: ["Object01.java", "Object02.java"],
+        callout: "사물함 비유: 번호(메모리 주소)가 같은가(==)? 아니면 번호는 달라도 안에 든 물건(데이터)이 같은가(equals())?",
+        questions: [
+          {
+            id: "q8_1",
+            title: "문제 1. Objects.hash()를 이용한 hashCode() 재정의",
+            source: "Object02.java",
+            concept: "equals와 쌍을 이루는 해시코드 규약",
+            type: "code",
+            instruction: "학생의 `name`과 `age` 필드가 같으면 동일한 해시코드가 나오도록 `hashCode()`를 `Objects.hash()`로 재정의하세요.",
+            starterCode: `public class Student {\n    private String name;\n    private int age;\n\n    // TODO: @Override public int hashCode() 메서드 구현\n}`,
+            solutionCode: `@Override\npublic int hashCode() {\n    return java.util.Objects.hash(name, age);\n}`,
+            hint: "`return Objects.hash(name, age);`",
+            explanation: "equals가 true를 반환하는 두 객체는 반드시 같은 hashCode를 반환해야 해시 기반 컬렉션(HashSet, HashMap)이 정상 작동합니다."
+          },
+          {
+            id: "q8_2",
+            title: "문제 2. 동일성(==)과 동등성(equals)의 차이",
+            source: "Object02.java",
+            concept: "메모리 주소 비교 vs 논리적 동등 비교",
+            type: "quiz",
+            instruction: "`Student s1 = new Student('강민재', 26);`와 `Student s2 = new Student('강민재', 26);`에서 `s1 == s2`의 결과와 이유로 옳은 것은?",
+            options: [
+              "1. true, 이름과 나이가 똑같기 때문에",
+              "2. false, new 키워드로 각각 다른 힙 메모리 주소(사물함)를 할당받았기 때문에",
+              "3. true, 자바가 문자열을 자동으로 인턴(Intern)하기 때문에",
+              "4. 컴파일 에러 발생"
+            ],
+            correctAnswer: 1,
+            hint: "== 연산자는 오직 참조 주소값(사물함 번호)만 비교합니다.",
+            explanation: "s1과 s2는 new로 생성된 서로 다른 인스턴스이므로 주소(==)는 false입니다. 데이터 내용 비교는 equals()를 호출해야 합니다."
+          },
+          {
+            id: "q8_3",
+            title: "문제 3. toString() 오버라이딩의 목적",
+            source: "Object01.java",
+            concept: "출력 편의성과 디버깅 가독성",
+            type: "quiz",
+            instruction: "`toString()`을 재정의하지 않고 `System.out.println(student)`를 실행했을 때 출력되는 형태는?",
+            options: [
+              "1. 학생의 모든 필드값이 JSON 형식으로 자동 출력된다.",
+              "2. 클래스이름@16진수해시코드 (예: Student@7a8114c7) 형태의 메모리 참조 암호가 출력된다.",
+              "3. 아무것도 출력되지 않고 빈 줄만 나온다.",
+              "4. NullPointerException이 발생한다."
+            ],
+            correctAnswer: 1,
+            hint: "Object 기본 toString()은 getClass().getName() + '@' + Integer.toHexString(hashCode()) 입니다.",
+            explanation: "기본 toString()은 의미를 알기 힘든 클래스명@해시코드 형태이므로, 사람이 읽을 수 있는 데이터 문자열로 오버라이딩해야 디버깅이 편해집니다."
+          }
+        ]
+      },
+      {
+        id: "ch09",
+        number: "Ch09",
+        title: "계층형 아키텍처 & 롬복 (Lombok)",
+        icon: "🏢",
+        desc: "Entity - Repository - Service 3계층 구조, Lombok(@Data), 차량 관리 시스템",
+        sourceFiles: ["Car.java", "CarRepository.java", "InitService.java", "CarMain.java"],
+        callout: "주문서(Entity) -> 창고 관리자(Repository) -> 총괄 매니저(Service)! 단일 책임 원칙으로 코드가 깔끔해집니다.",
+        questions: [
+          {
+            id: "q9_1",
+            title: "문제 1. 차량 관리 저장소의 삭제(delete) 메서드",
+            source: "CarRepository.java",
+            concept: "인메모리 리스트 요소 탐색 및 삭제",
+            type: "code",
+            instruction: "`CarRepository`에서 `id`가 일치하는 차량을 리스트에서 찾아 삭제하고, 삭제된 `Car` 객체를 반환하는 메서드를 작성하세요 (못 찾으면 null).",
+            starterCode: `public Car delete(Long id) {\n    // TODO: carList를 순회하며 car.getId().equals(id)인 차를 삭제하고 반환하세요.\n    return null;\n}`,
+            solutionCode: `public Car delete(Long id) {\n    for (int i = 0; i < carList.size(); i++) {\n        if (carList.get(i).getId().equals(id)) {\n            return carList.remove(i);\n        }\n    }\n    return null;\n}`,
+            hint: "List의 `remove(int index)`는 해당 인덱스의 객체를 삭제하면서 삭제된 객체를 반환합니다.",
+            explanation: "기본키(ID)를 기준으로 컬렉션을 탐색하여 일치하는 데이터를 안전하게 제거하고 반환하는 전형적인 저장소 삭제 로직입니다."
+          },
+          {
+            id: "q9_2",
+            title: "문제 2. 롬복 @Data가 자동 생성하는 어노테이션 묶음",
+            source: "Car.java",
+            concept: "Lombok 보일러플레이트 제거",
+            type: "quiz",
+            instruction: "롬복의 `@Data` 어노테이션이 내부적으로 포함하지 **않는** 것은?",
+            options: [
+              "1. @Getter와 @Setter",
+              "2. @ToString과 @EqualsAndHashCode",
+              "3. @RequiredArgsConstructor",
+              "4. @AllArgsConstructor (모든 필드 생성자)"
+            ],
+            correctAnswer: 3,
+            hint: "@Data는 기본 생성자나 final/NonNull 필드 생성자만 만들며, 모든 필드 생성자는 @AllArgsConstructor를 별도로 붙여야 합니다.",
+            explanation: "@Data는 편의 세트이지만 모든 필드를 인자로 받는 생성자(@AllArgsConstructor)와 기본 생성자(@NoArgsConstructor)는 포함하지 않으므로 필요 시 직접 지정해야 합니다."
+          },
+          {
+            id: "q9_3",
+            title: "문제 3. 계층형 아키텍처의 핵심 이점",
+            source: "InitService.java",
+            concept: "관심사의 분리 (Separation of Concerns)",
+            type: "quiz",
+            instruction: "데이터 저장 방식(메모리 -> MySQL 데이터베이스)이 바뀌었을 때 가장 영향을 덜 받아야 하는 계층은 어디일까요?",
+            options: [
+              "1. Repository 계층",
+              "2. Service 및 View 계층",
+              "3. Entity 계층만 변경된다",
+              "4. 모든 계층을 100% 새로 짜야 한다"
+            ],
+            correctAnswer: 1,
+            hint: "저장 기술이 바뀌어도 비즈니스 규칙(Service)과 화면(View)은 그대로 유지되어야 좋은 아키텍처입니다.",
+            explanation: "Repository 인터페이스 뒤로 저장 기술을 숨기면 데이터베이스가 오라클이든 MySQL이든 Service의 핵심 비즈니스 로직은 수정할 필요가 없습니다."
+          }
+        ]
+      },
+      {
+        id: "ch10",
+        number: "Ch10",
+        title: "디자인 패턴 & 실전 Todo 풀스택 앱",
+        icon: "🎡",
+        desc: "호텔/도서관/주차장 미니앱, 5계층 Todo 풀스택, RootRouter, SecurityConfig 세션",
+        sourceFiles: ["FeeCalculator.java", "HotelApp.java", "LibraryApp.java", "TodoApplication.java", "RootRouter.java", "SecurityConfig.java", "TodoStatus.java"],
+        callout: "회전목마 모터(TodoApplication) ↔ 교통경찰(RootRouter) ↔ 출입증 발급기(SecurityConfig) ↔ 3색 스티커(TodoStatus Enum)!",
+        questions: [
+          {
+            id: "q10_1",
+            title: "문제 1. 주차장 요금 정산 로직 구현",
+            source: "FeeCalculator.java",
+            concept: "회차 무료 & 초과 단위 요금 올림 계산",
+            type: "code",
+            instruction: "주차 시간(`minutes` 분)에 따라 요금을 계산하세요:\n- 30분 이하는 회차 무료(0원)\n- 30분 초과 시 기본 요금 1,000원에, 10분 초과당 500원 가산 (올림 계산)",
+            starterCode: `public static int calculateParkingFee(int minutes) {\n    if (minutes <= 30) return 0;\n    // TODO: 30분 초과분에 대해 10분 단위 올림 계산하여 총 요금 반환\n    return 0;\n}`,
+            solutionCode: `public static int calculateParkingFee(int minutes) {\n    if (minutes <= 30) return 0;\n    int overtime = minutes - 30;\n    int units = (int) Math.ceil(overtime / 10.0);\n    return 1000 + (units * 500);\n}`,
+            hint: "`Math.ceil(overtime / 10.0)`으로 10분 단위 올림을 구합니다. (예: 35분 초과는 4단위)",
+            explanation: "실제 주차 관제 시스템의 기본 요금 및 단위 초과 요금 계산 로직을 그대로 구현합니다."
+          },
+          {
+            id: "q10_2",
+            title: "문제 2. 상태 관리를 문자열 대신 Enum으로 하는 이유",
+            source: "TodoStatus.java",
+            concept: "Type-safety & 컴파일 타임 검증",
+            type: "quiz",
+            instruction: "할 일 상태를 String('진행중') 대신 `TodoStatus` 열거형(Enum)으로 만들었을 때의 결정적 장점은?",
+            options: [
+              "1. 메모리 용량을 90% 이상 절약할 수 있다.",
+              "2. 개발자가 오타('진행즁')를 내더라도 허용된 상수 외의 값은 컴파일러가 원천 차단해 준다.",
+              "3. 실행 속도가 100배 빨라진다.",
+              "4. 별도의 Getter/Setter 없이 모든 필드가 자동 공개된다."
+            ],
+            correctAnswer: 1,
+            hint: "문자열은 아무 글자나 들어가지만 Enum은 정의된 것만 허용됩니다.",
+            explanation: "Enum은 유효하지 않은 값이 들어오는 것을 컴파일 시점에 완벽히 방지하여 런타임 버그를 사전에 제거합니다."
+          },
+          {
+            id: "q10_3",
+            title: "문제 3. 콘솔 앱에서 RootRouter(교통경찰)의 역할",
+            source: "RootRouter.java",
+            concept: "다형성 View 라우팅 & 결합도 완화",
+            type: "quiz",
+            instruction: "RootRouter를 도입하여 얻을 수 있는 설계적 이점으로 가장 올바른 것은?",
+            options: [
+              "1. 모든 화면 코드를 하나의 파일로 합칠 수 있다.",
+              "2. 각 View는 다음 화면의 경로명(문자열)만 전달하면 되고, 화면 전환과 인스턴스 관리는 라우터가 전담하여 화면 간 결합도가 낮아진다.",
+              "3. 데이터베이스 쿼리를 자동으로 작성해 준다.",
+              "4. 스레드를 10개 이상 자동으로 생성한다."
+            ],
+            correctAnswer: 1,
+            hint: "A 화면에서 B 화면을 직접 new로 부르지 않고 교통경찰(Router)에게 '다음 화면으로 보내줘'라고 요청합니다.",
+            explanation: "화면 간의 직접적인 참조(스파게티 코드)를 끊고, 라우터가 중앙에서 화면 전환을 총괄하여 유지보수성을 극대화합니다."
+          }
+        ]
+      },
+      {
+        id: "ch11",
+        number: "Ch11",
+        title: "화면 라우팅 & 다형성 View 시스템 심화",
+        icon: "🧭",
+        desc: "List<View> 기반 화면 순환 루프 엔진, 학생 성적 관리 프로그램, 싱글톤 View",
+        sourceFiles: ["TodoMain.java", "StudentMain.java"],
+        callout: "List<View>에 화면들을 담아두고 pathIndex로 조종하는 회전목마 모터 엔진!",
+        questions: [
+          {
+            id: "q11_1",
+            title: "문제 1. pathIndex 기반 화면 전환 분기",
+            source: "StudentMain.java",
+            concept: "인덱스 기반 상태 머신 화면 제어",
+            type: "code",
+            instruction: "HomeView에서 사용자 입력 `choice`가 '1'이면 등록화면(`pathIndex = 1`), '2'이면 목록화면(`pathIndex = 2`), 'q'이면 종료(`running = false`) 처리하는 분기 로직을 작성하세요.",
+            starterCode: `public static void handleHomeMenu(String choice) {\n    // TODO: choice에 따라 StudentMain.pathIndex 또는 StudentMain.running을 변경하세요.\n}`,
+            solutionCode: `public static void handleHomeMenu(String choice) {\n    if ("1".equals(choice)) {\n        StudentMain.pathIndex = 1;\n    } else if ("2".equals(choice)) {\n        StudentMain.pathIndex = 2;\n    } else if ("q".equalsIgnoreCase(choice)) {\n        StudentMain.running = false;\n    }\n}`,
+            hint: "`StudentMain.pathIndex`와 `StudentMain.running` 플래그를 조건별로 갱신합니다.",
+            explanation: "전역 상태 변수를 통해 메인 무한 루프가 다음에 호출할 View를 결정하는 원리입니다."
+          },
+          {
+            id: "q11_2",
+            title: "문제 2. 화면(View) 객체에 싱글톤을 적용하는 결정적 이유",
+            source: "TodoMain.java",
+            concept: "무상태(Stateless) 객체 재활용 & GC 부하 감소",
+            type: "quiz",
+            instruction: "HomeView, RegisterView 등의 화면 클래스를 매번 `new`하지 않고 `getInstance()` 싱글톤으로 사용하는 이유는?",
+            options: [
+              "1. View 클래스는 private 변수가 없어서",
+              "2. 화면 루프가 돌 때마다 매번 new로 생성하면 불필요한 힙 메모리 낭비와 가비지 컬렉터 부담이 커지기 때문에",
+              "3. 싱글톤을 안 쓰면 콘솔 출력이 불가능하기 때문에",
+              "4. 자바 문법상 인터페이스 구현체는 싱글톤으로만 만들어야 해서"
+            ],
+            correctAnswer: 1,
+            hint: "화면 객체는 기능(show)만 있고 고유한 상태값을 저장하지 않으므로 1개만 만들어 돌려쓰는 것이 현명합니다.",
+            explanation: "화면 객체는 상태가 없는(Stateless) 컴포넌트이므로 단일 인스턴스를 유지하는 것이 메모리와 성능 면에서 가장 이상적입니다."
+          },
+          {
+            id: "q11_3",
+            title: "문제 3. 다형성 View 인터페이스의 규격",
+            source: "StudentMain.java",
+            concept: "인터페이스 show() 통일",
+            type: "quiz",
+            instruction: "모든 화면 클래스가 반드시 구현해야 하는 공통 메서드 규격으로 정의된 것은?",
+            options: [
+              "1. void printAll()",
+              "2. void show()",
+              "3. String render()",
+              "4. boolean execute()"
+            ],
+            correctAnswer: 1,
+            hint: "viewList.get(pathIndex).show();",
+            explanation: "모든 View가 동일한 `show()` 메서드를 가짐으로써 메인 루프는 구체적인 화면이 무엇인지 몰라도 다형성으로 실행할 수 있습니다."
+          }
+        ]
+      },
+      {
+        id: "ch12",
+        number: "Ch12",
+        title: "컬렉션 프레임워크 & 자료구조 & 예외 처리",
+        icon: "🔗",
+        desc: "CustomLinkedList 노드 직접 구현, 사용자 정의 예외, HashSet 중복 제거, Collections.sort",
+        sourceFiles: ["CollectionMain01.java", "CollectionMain02.java", "CollectionMain04.java", "Test01.java"],
+        callout: "내 손으로 직접 만드는 연결 리스트의 Node<E>와, 버그를 예쁘게 잡아내는 나만의 커스텀 예외 클래스!",
+        questions: [
+          {
+            id: "q12_1",
+            title: "문제 1. CustomLinkedList의 Node<E> 클래스 선언",
+            source: "CollectionMain02.java",
+            concept: "단방향 연결 리스트 노드 구조체",
+            type: "code",
+            instruction: "데이터(`E data`)와 다음 노드 참조(`Node<E> next`)를 가지며 데이터를 받아 초기화하는 `Node<E>` 정적 내부 클래스를 작성하세요.",
+            starterCode: `private static class Node<E> {\n    // TODO: 1) E data 선언\n    // TODO: 2) Node<E> next 선언\n    // TODO: 3) 생성자 구현 (this.data = data, this.next = null)\n}`,
+            solutionCode: `private static class Node<E> {\n    E data;\n    Node<E> next;\n\n    public Node(E data) {\n        this.data = data;\n        this.next = null;\n    }\n}`,
+            hint: "노드는 자기 자신과 같은 타입의 참조 변수 `Node<E> next`를 가집니다.",
+            explanation: "각 노드가 다음 노드의 메모리 주소를 체인처럼 쥐고 있는 자료구조의 기본 벽돌을 완성합니다."
+          },
+          {
+            id: "q12_2",
+            title: "문제 2. 사용자 정의 런타임 예외 클래스",
+            source: "CollectionMain04.java",
+            concept: "RuntimeException 상속 & 메시지 전달",
+            type: "code",
+            instruction: "`RuntimeException`을 상속받아 예외 메시지(`String message`)를 부모 생성자(`super(message)`)로 넘기는 `MyCustomException` 클래스를 작성하세요.",
+            starterCode: `// TODO: RuntimeException을 상속받는 MyCustomException 클래스를 작성하세요.\npublic class MyCustomException {\n\n}`,
+            solutionCode: `public class MyCustomException extends RuntimeException {\n    public MyCustomException(String message) {\n        super(message);\n    }\n}`,
+            hint: "`extends RuntimeException`과 `super(message);`",
+            explanation: "프로그램의 비즈니스 예외 상황을 명확한 이름으로 표현하기 위해 사용자 정의 예외를 작성합니다."
+          },
+          {
+            id: "q12_3",
+            title: "문제 3. 두 리스트 병합 및 오름차순 정렬",
+            source: "Test01.java",
+            concept: "addAll() & Collections.sort()",
+            type: "code",
+            instruction: "`list1 = [5, 2, 8]`에 `list2 = [3, 9, 1]`의 모든 원소를 합치고, 이를 오름차순으로 정렬하는 코드를 작성하세요.",
+            starterCode: `public static void mergeAndSort(List<Integer> list1, List<Integer> list2) {\n    // TODO: 1) list1에 list2 병합\n    // TODO: 2) 오름차순 정렬\n}`,
+            solutionCode: `public static void mergeAndSort(List<Integer> list1, List<Integer> list2) {\n    list1.addAll(list2);\n    Collections.sort(list1);\n}`,
+            hint: "`list1.addAll(list2);` 호출 후 `Collections.sort(list1);`을 수행합니다.",
+            explanation: "자바 컬렉션 프레임워크가 제공하는 강력한 유틸리티 메서드들을 복습합니다."
+          }
+        ]
+      }
+    ];
+
+    // Current State
+    let currentChapterId = "ch01";
+    let userAnswers = JSON.parse(localStorage.getItem("java_quiz_answers") || "{}");
+    let solvedStatus = JSON.parse(localStorage.getItem("java_quiz_solved") || "{}");
+
+    // Initialize App
+    document.addEventListener("DOMContentLoaded", () => {
+      renderSidebar();
+      renderCurrentChapter();
+      updateGlobalProgress();
+      checkDarkModePreference();
+    });
+
+    // Dark Mode Toggle
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle("dark");
+      const isDark = document.documentElement.classList.contains("dark");
+      localStorage.setItem("java_quiz_theme", isDark ? "dark" : "light");
+      document.getElementById("themeIcon").className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
+    }
+
+    function checkDarkModePreference() {
+      if (localStorage.getItem("java_quiz_theme") === "dark") {
+        document.documentElement.classList.add("dark");
+        document.getElementById("themeIcon").className = "fa-solid fa-sun";
+      }
+    }
+
+    // Sidebar Render
+    function renderSidebar(filteredChapters = null) {
+      const nav = document.getElementById("chapterNavList");
+      nav.innerHTML = "";
+      const list = filteredChapters || CHAPTERS_DATA;
+
+      list.forEach(ch => {
+        const totalInCh = ch.questions.length;
+        const solvedInCh = ch.questions.filter(q => solvedStatus[q.id]).length;
+        const isSelected = ch.id === currentChapterId;
+
+        const btn = document.createElement("button");
+        btn.onclick = () => selectChapter(ch.id);
+        btn.className = `w-full text-left px-2.5 py-1.5 rounded-md flex items-center justify-between text-xs transition ${
+          isSelected 
+            ? "bg-[var(--bg-hover)] font-semibold text-[var(--text-primary)]" 
+            : "text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+        }`;
+
+        btn.innerHTML = `
+          <div class="flex items-center space-x-2 truncate">
+            <span>${ch.icon}</span>
+            <span class="truncate">${ch.number}. ${ch.title.split("&")[0]}</span>
+          </div>
+          <span class="text-[11px] px-1.5 py-0.5 rounded-full ${
+            solvedInCh === totalInCh 
+              ? "bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400 font-bold" 
+              : "bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)]"
+          }">
+            ${solvedInCh}/${totalInCh}
+          </span>
+        `;
+        nav.appendChild(btn);
+      });
+    }
+
+    // Select Chapter
+    function selectChapter(chId) {
+      currentChapterId = chId;
+      renderSidebar();
+      renderCurrentChapter();
+      document.getElementById("contentArea").scrollTop = 0;
+    }
+
+    // Render Current Chapter Content
+    function renderCurrentChapter() {
+      const ch = CHAPTERS_DATA.find(c => c.id === currentChapterId);
+      if (!ch) return;
+
+      document.getElementById("breadcrumbChapter").innerText = `${ch.number}. ${ch.title}`;
+      document.getElementById("pageIcon").innerText = ch.icon;
+      document.getElementById("pageTitle").innerText = `${ch.number}. ${ch.title}`;
+      document.getElementById("pageDescription").innerText = ch.desc;
+      document.getElementById("pageCalloutText").innerHTML = `
+        <span class="font-medium text-amber-700 dark:text-amber-400">${ch.callout}</span><br>
+        <span class="text-[11px] text-[var(--text-secondary)] mt-1 inline-block">📁 원본 소스: ${ch.sourceFiles.join(', ')}</span>
+      `;
+
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
+
+      ch.questions.forEach((q, idx) => {
+        const isSolved = !!solvedStatus[q.id];
+        const card = document.createElement("div");
+        card.id = `card_${q.id}`;
+        card.className = `border border-[var(--border-color)] rounded-xl p-5 bg-[var(--bg-main)] shadow-sm transition-all ${
+          isSolved ? "ring-1 ring-green-500/30 border-green-500/50" : ""
+        }`;
+
+        let questionBodyHtml = "";
+
+        if (q.type === "code") {
+          const savedCode = userAnswers[q.id] || q.starterCode;
+          questionBodyHtml = `
+            <div class="mt-3">
+              <div class="flex items-center justify-between text-xs text-[var(--text-secondary)] mb-1.5">
+                <span class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-terminal text-amber-500"></i>
+                  <span>자바 코드 작성 에디터</span>
+                </span>
+                <button onclick="resetQuestionCode('${q.id}')" class="hover:text-red-500 text-[11px]">기본 코드로 초기화</button>
+              </div>
+              <textarea id="editor_${q.id}" oninput="saveUserCode('${q.id}', this.value)" 
+                class="code-editor w-full h-44 bg-[var(--code-bg)] text-[var(--code-text)] p-3 rounded-lg text-xs leading-relaxed focus:outline-none focus:ring-1 focus:ring-amber-500 border border-gray-700 font-mono resize-y"
+                spellcheck="false">${savedCode}</textarea>
+              
+              <div class="flex items-center justify-between mt-3">
+                <button onclick="runCodeCheck('${q.id}')" class="px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-xs font-semibold shadow-sm flex items-center space-x-1.5 transition">
+                  <i class="fa-solid fa-play text-[10px]"></i>
+                  <span>코드 채점 & 정답 확인</span>
+                </button>
+                <button onclick="copyToClipboard('${q.id}')" class="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-2 py-1 rounded border border-[var(--border-color)]">
+                  <i class="fa-regular fa-copy mr-1"></i>코드 복사
+                </button>
+              </div>
+              <div id="feedback_${q.id}" class="mt-2 text-xs hidden"></div>
+            </div>
+          `;
+        } else if (q.type === "quiz") {
+          const selectedOption = userAnswers[q.id];
+          questionBodyHtml = `
+            <div class="mt-3 space-y-2">
+              ${q.options.map((opt, optIdx) => `
+                <label class="flex items-center space-x-3 p-2.5 rounded-lg border border-[var(--border-color)] hover:bg-[var(--bg-hover)] cursor-pointer text-xs transition ${
+                  selectedOption === optIdx ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-500 font-medium" : ""
+                }">
+                  <input type="radio" name="radio_${q.id}" value="${optIdx}" onchange="selectQuizOption('${q.id}', ${optIdx})" ${selectedOption === optIdx ? "checked" : ""} class="accent-amber-500">
+                  <span>${opt}</span>
+                </label>
+              `).join('')}
+              <div class="mt-3">
+                <button onclick="checkQuizAnswer('${q.id}')" class="px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-xs font-semibold shadow-sm transition">
+                  선택지 정답 확인
+                </button>
+              </div>
+              <div id="feedback_${q.id}" class="mt-2 text-xs hidden"></div>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <!-- Header -->
+          <div class="flex items-start justify-between">
+            <div class="flex items-start space-x-2.5">
+              <input type="checkbox" id="check_${q.id}" onchange="toggleSolvedManual('${q.id}', this.checked)" ${isSolved ? "checked" : ""} 
+                     class="mt-1 w-4 h-4 rounded text-amber-500 accent-amber-500 cursor-pointer" title="완료 체크">
+              <div>
+                <h3 class="font-bold text-base text-[var(--text-primary)]">${q.title}</h3>
+                <div class="flex items-center space-x-2 text-xs text-[var(--text-secondary)] mt-0.5">
+                  <span class="bg-[var(--callout-bg)] px-2 py-0.5 rounded text-[11px] font-medium">📄 ${q.source}</span>
+                  <span>•</span>
+                  <span>${q.concept}</span>
+                </div>
+              </div>
+            </div>
+            <span id="badge_${q.id}" class="text-xs px-2 py-0.5 rounded-full font-medium ${
+              isSolved ? "bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300" : "bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)]"
+            }">
+              ${isSolved ? "풀이 완료 ✅" : "풀이 전"}
+            </span>
+          </div>
+
+          <!-- Instruction -->
+          <div class="mt-3 text-xs leading-relaxed text-[var(--text-primary)] bg-[var(--callout-bg)]/50 p-3 rounded-lg border border-[var(--border-color)]">
+            ${q.instruction.replace(/\n/g, '<br>')}
+          </div>
+
+          <!-- Dynamic Body (Code or Quiz) -->
+          ${questionBodyHtml}
+
+          <!-- Notion Style Accordion Toggles -->
+          <div class="mt-4 pt-3 border-t border-[var(--border-color)] space-y-2 text-xs">
+            <!-- Hint Toggle -->
+            <details class="notion-toggle group">
+              <summary class="flex items-center space-x-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] select-none">
+                <i class="fa-solid fa-chevron-right text-[10px] transition group-open:rotate-90"></i>
+                <span class="font-medium">💡 노션 힌트 확인하기</span>
+              </summary>
+              <div class="mt-2 pl-4 py-2 border-l-2 border-amber-400 text-amber-900 dark:text-amber-200 bg-amber-50/40 dark:bg-amber-950/30 rounded-r text-xs leading-relaxed">
+                ${q.hint}
+              </div>
+            </details>
+
+            <!-- Solution & Explanation Toggle -->
+            <details class="notion-toggle group">
+              <summary class="flex items-center space-x-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] select-none">
+                <i class="fa-solid fa-chevron-right text-[10px] transition group-open:rotate-90"></i>
+                <span class="font-medium">📝 모범 답안 및 상세 해설 보기</span>
+              </summary>
+              <div class="mt-2 pl-4 py-2.5 border-l-2 border-green-500 bg-gray-50 dark:bg-gray-900/60 rounded-r space-y-2">
+                ${q.solutionCode ? `
+                  <div class="font-mono text-xs p-2.5 bg-[var(--code-bg)] text-[var(--code-text)] rounded overflow-x-auto whitespace-pre">${escapeHtml(q.solutionCode)}</div>
+                ` : `
+                  <div class="text-xs font-bold text-green-700 dark:text-green-400">정답: ${q.options ? q.options[q.correctAnswer] : ''}</div>
+                `}
+                <div class="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  <b>해설:</b> ${q.explanation}
+                </div>
+              </div>
+            </details>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // Save User Code
+    function saveUserCode(qId, code) {
+      userAnswers[qId] = code;
+      localStorage.setItem("java_quiz_answers", JSON.stringify(userAnswers));
+    }
+
+    function resetQuestionCode(qId) {
+      const q = findQuestion(qId);
+      if (!q) return;
+      document.getElementById(`editor_${qId}`).value = q.starterCode;
+      saveUserCode(qId, q.starterCode);
+    }
+
+    function selectQuizOption(qId, optIdx) {
+      userAnswers[qId] = optIdx;
+      localStorage.setItem("java_quiz_answers", JSON.stringify(userAnswers));
+    }
+
+    // Validate Code Answer
+    function runCodeCheck(qId) {
+      const q = findQuestion(qId);
+      const code = document.getElementById(`editor_${qId}`).value.trim();
+      const feedback = document.getElementById(`feedback_${qId}`);
+      feedback.classList.remove("hidden");
+
+      // Heuristic validator based on core keywords of the question
+      let isCorrect = false;
+      let reason = "";
+
+      if (qId === "q1_1") {
+        isCorrect = code.includes("%") && code.includes("2") && code.includes("count++");
+        reason = isCorrect ? "짝수 판별식(num % 2 == 0)과 누적 카운트가 정상 작동합니다!" : "num % 2 == 0 판별식과 count++ 로직을 확인하세요.";
+      } else if (qId === "q1_2") {
+        isCorrect = (code.includes("- 1") || code.includes("-1")) && code.includes("seats") && code.includes("true");
+        reason = isCorrect ? "좌석 인덱스(seatNum - 1)와 중복 방지 로직이 완벽합니다!" : "인덱스(seatNum - 1) 및 빈자리 상태 변경을 점검하세요.";
+      } else if (qId === "q1_3") {
+        isCorrect = code.includes("등록") && code.includes("조회") && code.includes("삭제") && code.includes("종료");
+        reason = isCorrect ? "모든 메뉴 분기 문자열이 정확하게 매핑되었습니다!" : "1:등록, 2:조회, 3:삭제, 그외:종료 문자열을 확인하세요.";
+      } else if (qId === "q2_1") {
+        isCorrect = (code.includes("autoIncrement++") || code.includes("autoIncrement + 1")) && code.includes("memoList.add");
+        reason = isCorrect ? "autoIncrement 번호표 부여 및 리스트 저장이 완벽합니다!" : "memo.setId(this.autoIncrement++) 및 리스트 저장을 확인하세요.";
+      } else if (qId === "q2_2") {
+        isCorrect = code.includes("new MemoRepository") && code.includes("new MemoService") && code.includes("new MemoView");
+        reason = isCorrect ? "의존성 주입(DI) 3계층이 올바른 순서로 조립되었습니다!" : "Repo -> Service -> View 조립 생성자를 확인하세요.";
+      } else if (qId === "q3_1") {
+        isCorrect = code.includes("private int money") && code.includes("< 0");
+        reason = isCorrect ? "음수 유효성 검증과 private 캡슐화가 완벽합니다!" : "money < 0 조건문과 private 접근제어자를 확인하세요.";
+      } else if (qId === "q3_2") {
+        isCorrect = code.includes("static int totalStudents") && !code.includes("static String name");
+        reason = isCorrect ? "static 공용 변수와 인스턴스 변수 구분이 정확합니다!" : "공용 게시판 변수에 static 키워드를 붙였는지 확인하세요.";
+      } else if (qId === "q4_1") {
+        isCorrect = code.includes("total") && (code.includes("(double)") || code.includes("/ scores.length"));
+        reason = isCorrect ? "0 초기화 및 double 형변환 평균 연산이 완벽합니다!" : "total = 0 초기화와 (double) 형변환을 확인하세요.";
+      } else if (qId === "q4_2") {
+        isCorrect = (code.includes("matrix[i][i]") || code.includes("matrix[row][row]"));
+        reason = isCorrect ? "대각선 인덱스 matrix[i][i] 탐색이 완벽합니다!" : "matrix[i][i] 요소 합산을 확인하세요.";
+      } else if (qId === "q5_1") {
+        isCorrect = code.includes("new int[arr.length + 1]") && code.includes("newValue");
+        reason = isCorrect ? "+1 크기 새 배열 생성과 마지막 요소 대입이 완벽합니다!" : "arr.length + 1 크기 새 배열과 마지막 위치 저장을 확인하세요.";
+      } else if (qId === "q5_2") {
+        isCorrect = code.includes("!= target") && code.includes("result");
+        reason = isCorrect ? "target 제외 요소 필터링 및 새 배열 저장이 정확합니다!" : "num != target 필터링 조건을 확인하세요.";
+      } else if (qId === "q6_1") {
+        isCorrect = code.includes("this(name, age, \"한국고\")");
+        reason = isCorrect ? "this(...) 생성자 체이닝 호출이 완벽합니다!" : "this(name, age, \"한국고\"); 형태로 작성했는지 확인하세요.";
+      } else if (qId === "q7_1") {
+        isCorrect = code.includes("drive()") && (code.includes("openTrunk") || code.includes("flyHigh"));
+        reason = isCorrect ? "다형성 drive() 호출과 instanceof 다운캐스팅이 정확합니다!" : "drive() 호출 및 instanceof Car / Airplane 검사를 확인하세요.";
+      } else if (qId === "q7_2") {
+        isCorrect = code.includes("default void printReceipt") && code.includes("System.out.println");
+        reason = isCorrect ? "인터페이스 default 영수증 메서드 정의가 완벽합니다!" : "default void printReceipt() { ... } 문법을 확인하세요.";
+      } else if (qId === "q7_3") {
+        isCorrect = code.includes("marketList.get(2).get(1)") || code.includes("marketList.get(2).get( 1 )");
+        reason = isCorrect ? "2차원 리스트 행/열 체이닝(.get(2).get(1))이 정확합니다!" : "marketList.get(2).get(1) 인덱스를 확인하세요.";
+      } else if (qId === "q8_1") {
+        isCorrect = code.includes("Objects.hash(name, age)") || code.includes("Objects.hash(age, name)");
+        reason = isCorrect ? "Objects.hash(name, age)를 통한 해시코드 재정의가 완벽합니다!" : "return Objects.hash(name, age); 코드를 확인하세요.";
+      } else if (qId === "q9_1") {
+        isCorrect = code.includes("remove") && (code.includes("getId") || code.includes("equals"));
+        reason = isCorrect ? "차량 ID 대조 및 remove(i) 삭제/반환 로직이 완벽합니다!" : "getId().equals(id) 및 remove(i) 호출을 확인하세요.";
+      } else if (qId === "q10_1") {
+        isCorrect = code.includes("30") && code.includes("1000") && (code.includes("500") || code.includes("ceil"));
+        reason = isCorrect ? "30분 회차 무료 및 10분당 500원 초과 요금 계산이 정확합니다!" : "30분 회차 무료 및 10분 단위 올림 계산을 확인하세요.";
+      } else if (qId === "q11_1") {
+        isCorrect = code.includes("pathIndex") && code.includes("running");
+        reason = isCorrect ? "pathIndex 상태 전이 및 종료 플래그 처리가 정확합니다!" : "1번: pathIndex=1, 2번: pathIndex=2, q: running=false 로직을 확인하세요.";
+      } else if (qId === "q12_1") {
+        isCorrect = code.includes("Node<E> next") && code.includes("E data");
+        reason = isCorrect ? "연결 리스트 Node<E> 구조체 선언이 완벽합니다!" : "E data와 Node<E> next 참조 필드 선언을 확인하세요.";
+      } else if (qId === "q12_2") {
+        isCorrect = code.includes("extends RuntimeException") && code.includes("super(message)");
+        reason = isCorrect ? "RuntimeException 상속 및 super(message) 호출이 완벽합니다!" : "extends RuntimeException 및 super(message); 코드를 확인하세요.";
+      } else if (qId === "q12_3") {
+        isCorrect = code.includes("addAll") && code.includes("Collections.sort");
+        reason = isCorrect ? "리스트 addAll 병합 및 Collections.sort 정렬이 완벽합니다!" : "list1.addAll(list2) 및 Collections.sort(list1)를 확인하세요.";
+      } else {
+        isCorrect = code.length > 20;
+        reason = isCorrect ? "성공적으로 코드가 검증되었습니다!" : "코드를 조금 더 구체적으로 작성해 보세요.";
+      }
+
+      setSolvedState(qId, isCorrect, reason);
+    }
+
+    // Validate Quiz Choice
+    function checkQuizAnswer(qId) {
+      const q = findQuestion(qId);
+      const selected = userAnswers[qId];
+      const feedback = document.getElementById(`feedback_${qId}`);
+      feedback.classList.remove("hidden");
+
+      if (selected === undefined || selected === null) {
+        feedback.className = "mt-2 text-xs p-2.5 rounded bg-yellow-50 text-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-300";
+        feedback.innerHTML = "⚠️ 보기를 먼저 하나 선택해 주세요!";
+        return;
+      }
+
+      const isCorrect = (selected === q.correctAnswer);
+      const reason = isCorrect ? "🎉 정답입니다! 개념을 정확히 이해하셨습니다." : "❌ 오답입니다. 힌트와 해설을 확인해 보세요.";
+      setSolvedState(qId, isCorrect, reason);
+    }
+
+    // Set Solved State and Update UI
+    function setSolvedState(qId, isSolved, msg) {
+      solvedStatus[qId] = isSolved;
+      localStorage.setItem("java_quiz_solved", JSON.stringify(solvedStatus));
+
+      const feedback = document.getElementById(`feedback_${qId}`);
+      if (feedback) {
+        feedback.className = `mt-2 text-xs p-2.5 rounded font-medium ${
+          isSolved 
+            ? "bg-green-50 text-green-800 dark:bg-green-950/50 dark:text-green-300 border border-green-200 dark:border-green-800" 
+            : "bg-red-50 text-red-800 dark:bg-red-950/50 dark:text-red-300 border border-red-200 dark:border-red-800"
+        }`;
+        feedback.innerHTML = `${isSolved ? '✅ [PASS]' : '❌ [FAIL]'} ${msg}`;
+      }
+
+      const checkbox = document.getElementById(`check_${qId}`);
+      if (checkbox) checkbox.checked = isSolved;
+
+      const badge = document.getElementById(`badge_${qId}`);
+      if (badge) {
+        badge.className = `text-xs px-2 py-0.5 rounded-full font-medium ${
+          isSolved ? "bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300" : "bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)]"
+        }`;
+        badge.innerText = isSolved ? "풀이 완료 ✅" : "풀이 전";
+      }
+
+      const card = document.getElementById(`card_${qId}`);
+      if (card) {
+        if (isSolved) {
+          card.classList.add("ring-1", "ring-green-500/30", "border-green-500/50");
+        } else {
+          card.classList.remove("ring-1", "ring-green-500/30", "border-green-500/50");
+        }
+      }
+
+      updateGlobalProgress();
+      renderSidebar();
+    }
+
+    function toggleSolvedManual(qId, checked) {
+      solvedStatus[qId] = checked;
+      localStorage.setItem("java_quiz_solved", JSON.stringify(solvedStatus));
+      renderCurrentChapter();
+      updateGlobalProgress();
+      renderSidebar();
+    }
+
+    // Global Progress Update
+    function updateGlobalProgress() {
+      let total = 0;
+      let solved = 0;
+      CHAPTERS_DATA.forEach(c => {
+        c.questions.forEach(q => {
+          total++;
+          if (solvedStatus[q.id]) solved++;
+        });
+      });
+
+      const pct = Math.round((solved / total) * 100);
+      document.getElementById("progressPercent").innerText = `${pct}%`;
+      document.getElementById("progressBar").style.width = `${pct}%`;
+      document.getElementById("solvedCount").innerText = solved;
+      document.getElementById("totalQuestionsCount").innerText = total;
+    }
+
+    // Search Handler
+    function handleSearch(keyword) {
+      if (!keyword.trim()) {
+        renderSidebar();
+        return;
+      }
+      const kw = keyword.toLowerCase();
+      const filtered = CHAPTERS_DATA.filter(ch => 
+        ch.title.toLowerCase().includes(kw) ||
+        ch.number.toLowerCase().includes(kw) ||
+        ch.desc.toLowerCase().includes(kw) ||
+        ch.sourceFiles.some(f => f.toLowerCase().includes(kw)) ||
+        ch.questions.some(q => q.title.toLowerCase().includes(kw) || q.concept.toLowerCase().includes(kw))
+      );
+      renderSidebar(filtered);
+    }
+
+    // Reset Progress
+    function resetAllProgress() {
+      if (confirm("정말 모든 풀이 기록과 점수를 초기화하시겠습니까?")) {
+        localStorage.removeItem("java_quiz_solved");
+        localStorage.removeItem("java_quiz_answers");
+        solvedStatus = {};
+        userAnswers = {};
+        renderCurrentChapter();
+        renderSidebar();
+        updateGlobalProgress();
+      }
+    }
+
+    // Toggle Sidebar
+    function toggleSidebar() {
+      const sb = document.getElementById("sidebar");
+      sb.classList.toggle("-ml-72");
+    }
+
+    // Helpers
+    function findQuestion(qId) {
+      for (const ch of CHAPTERS_DATA) {
+        for (const q of ch.questions) {
+          if (q.id === qId) return q;
+        }
+      }
+      return null;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function copyToClipboard(qId) {
+      const code = document.getElementById(`editor_${qId}`).value;
+      navigator.clipboard.writeText(code);
+      alert("코드가 클립보드에 복사되었습니다!");
+    }
+
+    function copyAllIntelliJCode() {
+      const ch = CHAPTERS_DATA.find(c => c.id === currentChapterId);
+      if (!ch) return;
+      let text = `// ==========================================\n// ${ch.number}. ${ch.title} 인텔리제이 실습 파일\n// ==========================================\n\n`;
+      ch.questions.forEach(q => {
+        text += `// [${q.title}] - ${q.concept}\n${q.starterCode}\n\n`;
+      });
+      navigator.clipboard.writeText(text);
+      alert(`[${ch.number}]의 모든 실습 코드가 클립보드에 복사되었습니다! 인텔리제이에 바로 붙여넣어 테스트해보세요.`);
+    }
+  </script>
+</body>
+</html>

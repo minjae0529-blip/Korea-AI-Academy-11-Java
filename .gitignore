@@ -43,4 +43,7 @@ build/
 .fonts/
 *.pdf
 generate_pdf.py
+generate_todo_pdf.py
 make_pdf.py
+swift_cache/
+test_wk_print.swift

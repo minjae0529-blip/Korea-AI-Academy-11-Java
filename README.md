@@ -1,7 +1,6 @@
 # ☕ Korea-AI-Academy-11-Java
 
-대한민국인공지능아카데미 11기 **Java 기초부터 실무 객체지향 프로그래밍(OOP), 디자인 패턴 & 실전 애플리케이션(Todo Console App)** 종합 학습 레포지토리입니다.  
-비전공자도 쉽게 이해할 수 있도록 **일상의 직관적인 비유(출입증, 장부, 3색 스티커, 회전목마)**와 **실무 백엔드 아키텍처(Layered Architecture & MVC)**를 결합하여 체계적으로 정리했습니다.
+대한민국인공지능아카데미 11기 **Java 기초(`ch01`~`ch14`)부터 실전 콘솔 앱, Servlet 웹 서버, MySQL(JDBC) 데이터베이스 연동**까지 전 과정을 챕터별 핵심 위주로 정리한 학습 & 복습 레포지토리입니다.
 
 ---
 
@@ -9,265 +8,243 @@
 
 | 항목 | 내용 | 비고 |
 | :--- | :--- | :--- |
-| **Language** | Java 21 (LTS) | 최신 모던 자바 문법 (Record, Pattern Matching, Enum 등) |
-| **Build Tool** | Apache Maven 3.9+ | 의존성 관리 및 빌드 자동화 |
-| **Library** | **Lombok 1.18.48** | 보일러플레이트 코드(`@Data`, `@AllArgsConstructor` 등) 제거 |
-| **Architecture** | **Layered Architecture & MVC** | View ↔ Router ↔ Service ↔ Repository ↔ Entity 5계층 구조 |
-| **Design Pattern** | **Singleton, Strategy, Router** | 단일 인스턴스 보장, 화면 다형성 라우팅 제어 |
-| **IDE** | IntelliJ IDEA Ultimate | 개발, 디버깅 및 실행 |
-| **OS** | macOS | 개발 및 실행 환경 |
+| **Language** | Java 21 (LTS) | OOP, Collection, Lambda, Stream, Enum |
+| **Web / WAS** | Java Servlet 4.0, JSP, Apache Tomcat 9.0 | `@WebServlet`, Filter(UTF-8/CORS), MVC 포워딩 & JSON API |
+| **Database** | **MySQL & JDBC (`mysql-connector-j`)** | `DriverManager`, `PreparedStatement`, `ResultSet`, `try-with-resources` |
+| **Build & Library** | Maven, **Lombok**, **Jackson** | `@Data`, `@AllArgsConstructor`, JSON 직렬화/역직렬화 |
+| **IDE & OS** | IntelliJ IDEA Ultimate / macOS | 개발, 디버깅 및 DB 연동 환경 |
 
 ---
 
-## 📁 Repository Structure (ch01 ~ ch10)
+## 📁 Repository Structure
 
 ```text
 Korea-AI-Academy-11-Java/
-├── pom.xml                               # Maven 빌드 설정 파일 (Java 21, Lombok 의존성)
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   ├── ch01/                     # [기초 입출력 & 종합 자가진단 복습]
-│   │   │   │   ├── ScannerTest01.java    # 키보드 입력 처리
-│   │   │   │   ├── ArrayTest01~03.java   # 성적 관리, 짝수 탐색, 좌석 예약 시스템
-│   │   │   │   ├── AbstractTest01.java   # 추상화 및 안전한 다운캐스팅 실습
-│   │   │   │   ├── ObjectTest.java       # equals & hashCode 복습
-│   │   │   │   └── SingletonTest01.java  # 싱글톤 패턴 자가진단 코드
-│   │   │   ├── ch02/
-│   │   │   │   └── practice/             # [실전 미니 프로젝트 - 메모장 앱] (New ✨)
-│   │   │   │       ├── Memo.java         # 메모 데이터 엔티티
-│   │   │   │       ├── MemoRepository.java # 메모 인메모리 저장소
-│   │   │   │       ├── MemoService.java  # 메모 비즈니스 로직
-│   │   │   │       ├── MemoView.java     # 콘솔 입출력 UI 화면
-│   │   │   │       └── MemoApplication.java # 의존성 주입(DI) 및 무한 루프 실행
-│   │   │   ├── ch03/                     # [JVM 메모리 구조 & 접근 제어자]
-│   │   │   │   ├── access/               # 캡슐화(private, getter/setter) 및 정보 은닉
-│   │   │   │   ├── MethodArea.java       # 클래스 로딩과 static 영역의 동작 원리
-│   │   │   │   └── StaticBasic.java      # 공용 static 변수 vs 개인 인스턴스 변수
-│   │   │   ├── ch04/                     # [배열 심화] 1차원/2차원 배열과 메모리 참조
-│   │   │   ├── ch05/                     # [제어문 응용] if, for, while, 3차원 구구단, 동적 배열 확장
-│   │   │   ├── ch06/                     # [메서드 & 생성자] 인스턴스/스태틱 메서드, 메서드 오버로딩
-│   │   │   ├── ch07/                     # [객체지향 4대 원칙 & 컬렉션]
-│   │   │   │   ├── AbstractMain01~06.java # List 컬렉션, 추상 클래스, 다형성, super, 인터페이스
-│   │   │   │   ├── Practice01~04.java     # 다형성 종합 실습 (탈것, 결제, 급여, 2차원 리스트)
-│   │   │   │   └── README.md             # Ch07 전용 핵심 개념 정리 노트
-│   │   │   ├── ch08/                 # [Object 클래스 완전 정복]
-│   │   │   │   ├── Object01.java         # getClass(), instanceof, toString() 재정의
-│   │   │   │   └── Object02.java         # 동일성(==) vs 동등성(equals) & hashCode
-│   │   │   ├── ch09/                 # [실무 계층형 아키텍처 & 롬복]
-│   │   │   │   ├── entity/Car.java       # Lombok(@Data)을 활용한 차량 엔티티 모델링
-│   │   │   │   ├── repository/CarRepository.java # 차량 데이터 보관 및 CRUD(등록/삭제/조회)
-│   │   │   │   ├── service/InitService.java      # 시스템 초기화 및 싱글톤 저장소 관리
-│   │   │   │   └── CarMain.java          # 차량 관리 시스템 실행 컨트롤러
-│   │   │   ├── ch10/                 # [디자인 패턴 & 실전 Todo 풀스택 앱] 🌟 (Major Update)
-│   │   │   │   ├── SingletonMain.java    # 싱글톤 패턴 기초 (StudentService)
-│   │   │   │   └── TODO/                 # [실전 콘솔 풀스택 Todo 애플리케이션]
-│   │   │   │       ├── TodoApplication.java # 메인 엔트리포인트 (회전목마 모터)
-│   │   │   │       ├── config/           # [보안 & 세션 관리]
-│   │   │   │       │   └── SecurityConfig.java # UUID 세션 토큰 발급 및 로그인 상태 유지
-│   │   │   │       ├── entity/           # [데이터 모델링]
-│   │   │   │       │   ├── User.java     # 회원 엔티티
-│   │   │   │       │   ├── Todo.java     # 할 일 엔티티 (User 연관관계)
-│   │   │   │       │   └── TodoStatus.java # 열거형(Enum): 진행전/진행중/완료
-│   │   │   │       ├── repository/       # [데이터 보관소]
-│   │   │   │       │   ├── UserRepository.java # 회원 인메모리 저장소
-│   │   │   │       │   └── TodoRepository.java # 할 일 CRUD 및 사용자별 필터링
-│   │   │   │       ├── service/          # [비즈니스 총괄 매니저]
-│   │   │   │       │   ├── UserService.java # 로그인 인증 및 토큰 발급 연계
-│   │   │   │       │   └── TodoService.java # 세션 기반 할 일 등록/조회/상태변경
-│   │   │   │       ├── view/             # [UI 화면 창구]
-│   │   │   │       │   ├── View.java     # 화면 공통 인터페이스 (show() 규격)
-│   │   │   │       │   ├── LoginView.java # 로그인 화면
-│   │   │   │       │   ├── TodoListView.java # 내 할 일 목록 조회 화면
-│   │   │   │       │   ├── TodoRegisterView.java # 새 할 일 등록 화면
-│   │   │   │       │   └── TodoStatusView.java   # 상태 변경(3색 스티커) 화면
-│   │   │   │       ├── router/           # [화면 라우팅]
-│   │   │   │       │   └── RootRouter.java # 경로(Path) 기반 화면 전환 컨트롤러
-│   │   │   │       └── docs/             # [13개 클래스별 상세 가이드 & 마스터 문서]
-│   │   │   └── study/                # JVM 메모리 구조 및 함수 개념 탐구
-│   │   └── resources/
-│   └── test/
-└── README.md                             # 프로젝트 전체 통합 가이드 문서
+├── pom.xml                               # Maven 설정 (Java 21, Lombok)
+├── src/main/java/
+│   ├── ch03/                             # [Ch03] JVM 메모리(MethodArea, Static) & 접근 제어자(access)
+│   └── com/korai/
+│       ├── ch01/                         # [Ch01] 기초 입출력(Scanner), 배열/객체/추상화/싱글톤 복습
+│       ├── ch02/practice/                # [Ch02] 실전 미니 프로젝트 - 메모장 앱 (DI 구조)
+│       ├── ch03/practice/                # [Ch03] 캡슐화 실습 (Visitor)
+│       ├── ch04/                         # [Ch04] 1차원/2차원 배열과 메모리 참조 (ArrayMain01~04)
+│       ├── ch05/                         # [Ch05] 조건문(if/switch), 반복문, 동적 배열 확장 (ControlMain~7)
+│       ├── ch06/                         # [Ch06] 메서드 정의, 호출, 오버로딩 (Method01~03)
+│       ├── ch07/                         # [Ch07] 상속(super), 추상 클래스, 인터페이스, 다형성, List 기초
+│       ├── ch08/                         # [Ch08] Object 클래스 (toString, equals, hashCode)
+│       ├── ch09/                         # [Ch09] 계층형 아키텍처(Entity-Repository-Service) & Lombok
+│       ├── ch10/                         # [Ch10] 싱글톤 패턴 & 콘솔 풀스택 Todo 앱 / 호텔·도서관·주차장 실습
+│       ├── ch11/                         # [Ch11] 싱글톤 View 리스트 기반 화면 라우팅 (TodoMain, StudentMain)
+│       ├── ch12/                         # [Ch12] 컬렉션 심화(List/Set/Map), CustomLinkedList 구현, 예외 처리
+│       ├── ch13/                         # [Ch13] 익명 클래스(Anonymous Class) & 람다식(Lambda), 표준 함수형 인터페이스
+│       └── ch14/                         # [Ch14] Stream API (filter/map/toList) & CustomStream 직접 구현
+├── servlet-study-basic/                  # [Servlet 기초] FirstServlet, HelloServlet, web.xml
+├── servlet-jdbc-study/                   # [Servlet 심화 & MySQL JDBC 연동]
+│   └── src/main/java/com/korai/serveltstudy2/
+│       ├── database/                     # DBConnectionTest.java (MySQL 연동), Menu.java
+│       ├── controller/                   # Book, Car, Product, User, Student (View & REST API 컨트롤러)
+│       ├── model/                        # Entity, Service, Repository 계층
+│       └── filter/                       # Utf8EncodingFilter, CorsFilter
+└── docs/                                 # 서블릿 노트(servlet_study_workbook.md) 및 학습 요약 자료
 ```
 
 ---
 
-## 🧭 Ch01 ~ Ch10 단계별 커리큘럼 로드맵 (비전공자 눈높이 가이드)
+## 📌 챕터별 핵심 요약 노트 (Ch01 ~ Ch14 + Servlet & DB)
 
-### 🟢 1단계: 프로그래밍 기본기와 의존성 주입 기초 (Ch01 ~ Ch03)
+### **Ch01. 자바 기초 입출력 & 종합 복습**
+* **핵심 키워드**: `Scanner`, `System.out.println`, 배열 응용, 객체 모델링
+* **주요 내용**:
+  * 콘솔 입력(`ScannerTest01`)과 1차원 `boolean` 배열을 결합한 **좌석 예약 시스템(`ArrayTest03`)** 구현.
+  * 도메인 객체(`Movie`, `Author`, `Homeplus`)의 필드/메서드 설계 및 기초 문법 자가진단.
 
-#### **Ch01. 자바 기초 & 누적 종합 복습**
-* **개념**: 컴퓨터와의 대화 시작. 콘솔에서 입력을 받고(`Scanner`), 결과를 화면에 출력(`System.out.println`).
-* **실습 하이라이트**: 좌석 예약 프로그램(`ArrayTest03`), 누적 학습 내용(추상화, 다운캐스팅, 싱글톤) 자가 진단 테스트 코드 작성.
+---
 
-#### **Ch02 (Practice). 실전 미니 프로젝트 — 메모장 앱 (`MemoApplication`)** ✨
-* **비전공자 핵심 포인트: 의존성 주입(Dependency Injection, DI)**
-  * 요리사(`Service`)가 직접 텃밭에서 배추(`Repository`)를 기르는 것이 아니라, **외부에서 싱싱한 배추를 손에 쥐여주는 것**이 DI입니다!
+### **Ch02. 의존성 주입(DI) 기초 — 메모장 미니 프로젝트 (`MemoApplication`)**
+* **핵심 키워드**: `Entity` - `Repository` - `Service` - `View`, **DI(Dependency Injection)**
+* **주요 내용**:
+  * 클래스 내부에서 직접 `new`로 의존 객체를 생성하지 않고, **외부(`MemoApplication`)에서 생성자를 통해 주입**해 주는 구조.
   ```java
-  // 1) 보관함(저장소) 생성
-  MemoRepository memoRepository = new MemoRepository();
-  // 2) 매니저에게 보관함을 쥐여줌 (DI)
-  MemoService memoService = new MemoService(memoRepository);
-  // 3) 화면에 매니저를 연결해줌 (DI)
-  MemoView memoView = new MemoView(memoService);
+  MemoRepository repo = new MemoRepository();
+  MemoService service = new MemoService(repo); // 저장소 주입(DI)
+  MemoView view = new MemoView(service);       // 서비스 주입(DI)
   ```
 
-#### **Ch03. JVM 메모리 구조 & 정보 은닉(캡슐화)**
-* **비전공자 3대 메모리 비유**:
-  * **Method Area (스태틱 영역)**: 마을의 **공용 게시판**. 누구나 언제든 바로 볼 수 있음 (`static`).
-  * **Heap Area (힙 영역)**: 물건을 만드는 **공장 부지**. `new`를 외치면 이곳에 객체가 지어짐.
-  * **Stack Area (스택 영역)**: 작업자가 쓰는 **개인 메모장**. 메서드가 끝나면 메모장 페이지를 찢어서 버림.
-* **접근 제어자 (캡슐화)**: `private`(내 방 비밀금고), `getter/setter`(금고지기).
+---
+
+### **Ch03. JVM 메모리 구조 & 접근 제어자(캡슐화)**
+* **핵심 키워드**: `Method Area(static)`, `Heap(new)`, `Stack`, `private`, `getter/setter`
+* **주요 내용**:
+  * **메모리 3영역**:
+    * **Method Area (`static`)**: 클래스 로딩 시 생성되어 모든 인스턴스가 공유하는 공용 영역 (`StaticBasic`).
+    * **Heap Area (`new`)**: 생성된 객체(인스턴스)가 실제로 저장되는 공간.
+    * **Stack Area**: 메서드 호출 시 지역 변수와 참조 주소값이 저장되었다가 메서드 종료 시 사라지는 공간.
+  * **캡슐화 (`access/`, `Visitor.java`)**: 필드는 `private`으로 외부 직접 접근을 막고, `getter/setter`나 검증 메서드(`moneyCheck`)를 통해서만 안전하게 값을 다루도록 설계.
 
 ---
 
-### 🟡 2단계: 데이터 묶음과 흐름 제어 (Ch04 ~ Ch06)
-
-#### **Ch04 ~ Ch05. 배열과 제어문의 응용**
-* **배열의 본질**: 크기가 고정된 계란판.
-* **동적 배열 확장 기법 (`ControlMain6`)**: 배열이 꽉 차면 더 큰 새 배열(2배 크기)로 데이터를 이사시키는 실무 원리.
-* **반복 제어**: `break`(문 닫고 탈출), `continue`(이번 순번만 건너뛰기).
-
-#### **Ch06. 메서드와 생성자 (Constructor)**
-* **메서드 오버로딩 (Overloading)**: "이름은 하나인데 일하는 방식은 여러 개!" (파라미터에 따라 맞춤 동작).
-* **생성자 체이닝 (`this()`)**: 기본값으로 주문할 때 기존 주문서를 재활용하여 중복 제거.
+### **Ch04. 배열(Array) 심화 (`ArrayMain01 ~ 04`)**
+* **핵심 키워드**: 고정 길이 자료구조, 인덱스(`0 ~ length-1`), 2차원 배열, 참조 주소 복사
+* **주요 내용**:
+  * 배열은 생성 시 크기가 고정되며, 변수에는 배열의 실제 값이 아닌 **Heap 메모리 주소값**이 저장됨.
+  * 1차원 및 다차원 배열 선언, 초기화, 반복문 순회 패턴 실습.
 
 ---
 
-### 🟠 3단계: 객체지향 4대 원칙 & 컬렉션 (Ch07)
-
-* **추상 클래스 (`is-a`) vs 인터페이스 (`can-do`)**:
-  * **추상 클래스**: "동물(부모)은 숨을 쉰다"처럼 공통의 상태와 피를 물려줌.
-  * **인터페이스**: "운전할 수 있는 자격증"처럼 특정 기능/규격을 강제함.
-* **다형성 (Polymorphism)**:
-  * **업캐스팅 (Upcasting)**: `Animal a = new Dog();` 부모 타입으로 자식 객체를 유연하게 다룸.
-  * **다운캐스팅 (Downcasting)**: `instanceof`로 진짜 강아지인지 확인 후 안전하게 고유 기능 호출.
-* **컬렉션 `List`**: 크기가 자동으로 늘어나는 마법의 주머니 (`ArrayList` vs `LinkedList`).
+### **Ch05. 제어문 응용 & 동적 배열 확장 (`ControlMain ~ 7`)**
+* **핵심 키워드**: `if-else`, `switch-case`, `for`, `while`, `break / continue`, 배열 크기 확장
+* **주요 내용**:
+  * **`switch ~ case` (`ControlMain2`)**: 일치하는 `case`로 바로 이동하며, `break`가 없으면 아래 `case`까지 연속 실행됨.
+  * **동적 배열 확장 (`ControlMain6`)**: 고정 배열이 꽉 찼을 때 **더 큰 새 배열을 만들어 기존 데이터를 복사해 옮기는 원리** 구현 (`ArrayList`의 내부 동작 원리).
 
 ---
 
-### 🔴 4단계: 자바 최상위 클래스 & 계층 아키텍처 (Ch08 ~ Ch09)
-
-#### **Ch08. 자바의 시조새 — `Object` 클래스**
-1. **`toString()`**: 기본 메모리 암호 대신 사람이 읽을 수 있는 데이터 문자열로 변환.
-2. **동일성(`==`) vs 동등성(`equals()`) [사물함 비유]**:
-   * **`==`**: 사물함 번호(메모리 주소)가 같은가?
-   * **`equals()`**: 사물함 번호는 달라도 안에 든 물건(데이터)이 같은가?
-3. **`hashCode()`**: "내용물이 같으면 도서관 청구기호(해시코드)도 반드시 같아야 한다!"
-
-#### **Ch09. 계층형 아키텍처(Layered) & 롬복(Lombok)**
-* **3단 분리**: Entity(주문서) $\rightarrow$ Repository(창고 관리자) $\rightarrow$ Service(총괄 매니저).
-* **Lombok (`@Data`)**: 수십 줄의 Getter/Setter 코드를 어노테이션 하나로 자동 완성.
+### **Ch06. 메서드와 생성자 (`Method01 ~ 03`)**
+* **핵심 키워드**: 매개변수(Parameter), 반환값(`return`), **오버로딩(Overloading)**, 생성자 `this()`
+* **주요 내용**:
+  * **메서드 오버로딩**: 메서드 이름은 같지만 **매개변수의 타입, 개수, 순서**를 다르게 정의하여 다양한 입력을 처리하는 기법.
+  * **생성자 체이닝(`this()`)**: 생성자 안에서 다른 생성자를 호출해 초기화 코드 중복을 제거.
 
 ---
 
-### 🟣 5단계: 디자인 패턴 & 실전 콘솔 풀스택 Todo 앱 (Ch10) 🌟 [NEW]
-
-Ch10에서는 단순 문법 학습을 넘어, **웹/앱 프레임워크(Spring Boot 등)의 근간이 되는 풀스택 아키텍처를 순수 자바 콘솔 환경에서 직접 구현**했습니다.
-
-```text
-               ┌─────────────────────────────────────────┐
-               │    TodoApplication (회전목마 모터)       │
-               │   while (true) { currentView.show(); }  │
-               └────────────────────┬────────────────────┘
-                                    │ 현재 화면 요청
-                                    ▼
-               ┌─────────────────────────────────────────┐
-               │          RootRouter (교통경찰)           │
-               │  "login" -> LoginView                   │
-               │  "todo-list" -> TodoListView            │
-               │  "todo-register" -> TodoRegisterView    │
-               │  "todo-status" -> TodoStatusView        │
-               └────────────────────┬────────────────────┘
-                                    │ 화면 출력 & 입력 접수
-                                    ▼
-                         ┌──────────────────────┐
-                         │   View (공통 인터페이스)│
-                         └──────────┬───────────┘
-                                    │ 비즈니스 처리 요청
-                                    ▼
-       ┌────────────────────────────┴────────────────────────────┐
-       ▼                                                         ▼
-┌──────────────┐ (로그인/인증)                           ┌──────────────┐ (할 일 CRUD)
-│ UserService  │                                         │ TodoService  │
-└──────┬───────┘                                         └──────┬───────┘
-       │                                                        │
-       ├─────────────► SecurityConfig (출입증 발급기) ◄──────────┤
-       │               [uuid@userId 세션 토큰 보관]               │
-       ▼                                                         ▼
-┌──────────────┐                                         ┌──────────────┐
-│UserRepository│                                         │TodoRepository│
-│  (회원 장부)   │                                         │ (할 일 바인더) │
-└──────────────┘                                         └──────────────┘
-```
-
-#### 🗺️ [한눈에 보는 비전공자 찰떡 비유 맵]
-
-| 현실 세계 비유 | 프로그램 속 클래스명 | 실제 시스템 역할 |
-|:---|:---|:---|
-| 🎡 **회전목마 모터** | `TodoApplication` | 프로그램이 꺼지기 전까지 계속 화면을 돌려주는 무한 루프 엔진 |
-| 📐 **화면 규격 약속** | `View` (인터페이스) | 모든 모니터가 똑같은 전원 버튼(`show()`)을 갖추도록 정한 인터페이스 |
-| 👮 **안내 데스크 & 교통경찰** | `RootRouter` | 부품을 조립하고, 경로(`current`)에 따라 "다음 화면!"을 전환해 주는 라우터 |
-| 🎫 **출입증 발급기 & 세션** | `SecurityConfig` | 로그인 성공 시 유일한 출입증(`UUID@userId`)을 발급하고 로그인 상태를 기억하는 싱글톤 설정 |
-| 🪪 **회원 신분증** | `User` (Entity) | 회원 번호, 아이디, 비밀번호, 이름이 적힌 회원 데이터 객체 |
-| 📝 **할 일 메모지** | `Todo` (Entity) | 할 일 내용과 3색 스티커가 붙어 있고 작성자(`User`) 정보가 꽂힌 객체 |
-| 🏷️ **3색 상태 스티커** | `TodoStatus` (Enum) | [진행전 / 진행중 / 완료] 딱 3가지만 붙일 수 있도록 규격화한 열거형 |
-| 📖 **회원 관리 장부** | `UserRepository` | 회원 아이디로 회원을 검색하고 저장하는 인메모리 장부 |
-| 🗂️ **할 일 바인더 & 번호표 기계** | `TodoRepository` | 메모지가 들어올 때마다 1, 2, 3 번호표(`autoIncrement`)를 붙이고, 내 메모만 골라줌 |
-| 🕵️ **신분증 검사관** | `UserService` | 아이디/비밀번호를 장부와 대조하여 일치하면 출입증 발급 |
-| 👨‍💼 **할 일 총괄 매니저** | `TodoService` | 출입증을 검사해 "누구의 메모인지" 확인하고 등록/조회/상태변경을 총괄 지휘 |
-| 🖥️ **화면 창구들** | `LoginView`, `TodoListView`, `TodoRegisterView`, `TodoStatusView` | 사용자에게 입력을 받고 처리 결과를 보여주는 콘솔 UI 창구 |
+### **Ch07. 객체지향 4대 원칙(상속·추상화·다형성) & `List` 기초**
+* **핵심 키워드**: `extends`, `super()`, `abstract class`, `interface`, 업캐스팅/다운캐스팅, `instanceof`
+* **주요 내용**:
+  * **상속과 `super`**: 자식 객체 생성 시 부모 생성자(`super()`)가 먼저 실행됨.
+  * **다형성(Polymorphism)**:
+    * **업캐스팅**: `부모타입 변수 = new 자식객체();` (여러 자식 객체를 하나의 부모 리스트 `List<부모>`로 묶어서 관리 가능).
+    * **다운캐스팅**: 자식의 고유 기능을 쓸 때 `if (obj instanceof 자식타입)`으로 확인 후 안전하게 형변환.
+  * **추상 클래스 vs 인터페이스**:
+    * `abstract class`(`extends`): 공통 필드와 일반 메서드를 물려주면서 일부 추상 메서드 구현 강제 (단일 상속).
+    * `interface`(`implements`): 구현 강제를 위한 기능 규격서, 다중 구현 가능 (`default` 메서드 지원).
+  * 📖 상세 노트: [`src/main/java/com/korai/ch07/README.md`](file:///Users/kangminjae/Documents/gov/java/study/src/main/java/com/korai/ch07/README.md)
 
 ---
 
-## 📊 Day-10 대규모 업데이트 비교표
-
-| 구분 | 이전 커밋 (`2727f21`) | 오늘 최신화 (`Day-10`, `f28e854`) | 비고 |
-| :--- | :--- | :--- | :--- |
-| **프로젝트 규모** | 챕터별 문법 예제 중심 | **실전 풀스택 Todo 애플리케이션 (5계층) 추가** | 미니/대형 실전 프로젝트 2종 탑재 |
-| **화면 제어 방식** | 단순 콘솔 단일 루프 | **다형성 라우터 (`RootRouter`) 기반 화면 전환** | 웹 프론트엔드의 SPA 라우팅 원리 적용 |
-| **보안 & 세션** | 미구현 | **`SecurityConfig` (UUID 기반 토큰 & 세션 유지)** | 로그인 인증 상태 유지 구현 |
-| **상태 관리** | 문자열(String) 단순 처리 | **`TodoStatus` 열거형 (Enum) 타입 안전성 확보** | 진행전 / 진행중 / 완료 상태 제어 |
-| **데이터 연관관계** | 단순 단일 객체 | **User ↔ Todo (1:N 연관관계 & 작성자 필터링)** | 로그인한 본인의 할 일만 조회/관리 |
-| **문서화** | README 중심 요약 | **13개 클래스별 가이드 문서 + HTML 대시보드** | `ch10/TODO/docs/` 내 완전한 문서화 |
+### **Ch08. 최상위 `Object` 클래스 (`Object01 ~ 02`)**
+* **핵심 키워드**: `toString()`, `equals()`, `hashCode()`, 동일성(`==`) vs 동등성(`equals`)
+* **주요 내용**:
+  * **`toString()`**: 객체 출력 시 메모리 주소 대신 내부 필드 값을 문자열로 보여주도록 오버라이딩.
+  * **`==` vs `equals()`**: `==`는 두 객체의 **메모리 주소**가 같은지 비교하고, `equals()`는 객체 안의 **실제 데이터(값)**가 같은지 비교.
+  * **`hashCode()`**: `equals()`가 `true`이면 `hashCode()` 값도 같아야 함 (`HashSet`, `HashMap`에서 중복 판별 기준).
 
 ---
 
-## 💡 비전공자를 위한 핵심 1분 Q&A (FAQ)
-
-### Q1. Enum(열거형)은 왜 쓰나요? 그냥 문자열(`"진행중"`)로 쓰면 안 되나요?
-> **답변**: 문자열로 쓰면 개발자가 오타를 내서 `"진행즁"`이나 `"중"`이라고 적어도 컴파일러가 잡아내지 못해 큰 버그가 생깁니다. `Enum`을 쓰면 미리 정해둔 `todo`, `inProgress`, `done` 외에는 아예 입력을 못 하도록 **컴파일러가 완벽하게 안전장치**를 걸어줍니다!
-
-### Q2. 웹 브라우저도 아닌 콘솔 프로그램인데 왜 Router(라우터)와 Session(세션)이 필요한가요?
-> **답변**: 콘솔 프로그램도 화면이 1개만 있는 것이 아닙니다. [로그인 화면] $\rightarrow$ [목록 화면] $\rightarrow$ [등록 화면]처럼 화면이 바뀔 때마다 코드가 꼬이지 않도록 **"교통경찰(Router)"**이 길을 안내해 주어야 하고, 로그인한 사람이 누구인지 기억하는 **"출입증 주머니(Session)"**가 있어야 내 할 일만 쏙 골라 보여줄 수 있기 때문입니다.
-
-### Q3. 의존성 주입(DI)은 왜 실무 필수인가요?
-> **답변**: 부품 간의 결합도를 낮추기 위해서입니다. 내가 직접 자동차 엔진을 내 방에서 조립해 넣으면 나중에 다른 엔진으로 바꿀 때 자동차 전체를 뜯어고쳐야 합니다. 밖에서 완성된 엔진을 조립해 넣어주면(DI), 엔진이 고장 나도 엔진만 쏙 바꿔 끼울 수 있어 유지보수가 엄청나게 쉬워집니다.
+### **Ch09. 실무 계층형 아키텍처 & Lombok (`CarMain`)**
+* **핵심 키워드**: `@Data`, `@AllArgsConstructor`, `@NoArgsConstructor`, 3계층 분리
+* **주요 내용**:
+  * **Lombok**: 어노테이션만으로 `Getter`, `Setter`, `toString`, `equals`, `hashCode`, 생성자를 자동 생성.
+  * **역할 분리**: `Car`(데이터 엔티티) ↔ `CarRepository`(배열/리스트 저장 및 조회) ↔ `InitService`(비즈니스 처리).
 
 ---
 
-## 🚀 프로젝트 실행 및 테스트 방법
+### **Ch10. 디자인 패턴(싱글톤) & 실전 도메인 프로젝트 (`TODO`, `hotel`, `library`, `parking`)**
+* **핵심 키워드**: **Singleton 패턴**, `Enum`, 세션 인증(`SecurityConfig`), `RootRouter`
+* **주요 내용**:
+  * **싱글톤 패턴 (`SingletonMain`)**: 생성자를 `private`으로 막고 `getInstance()`로 프로그램 전체에서 **단 1개의 객체만 공유**해 메모리 낭비를 방지.
+  * **실전 Todo 콘솔 앱 (`ch10/TODO`)**:
+    * `View` ↔ `RootRouter`(화면 전환) ↔ `Service` ↔ `Repository` ↔ `Entity` 구조.
+    * `SecurityConfig`: 로그인 성공 시 `UUID@userId` 토큰을 발급해 내 할 일만 조회/등록.
+    * `TodoStatus(Enum)`: 할 일 상태를 `[진행전 / 진행중 / 완료]` 3가지로 안전하게 제한.
+  * **도메인 연습 3종**: 호텔 객실 관리(`hotel`), 도서관 대출/반납(`library`), 주차장 요금 정산(`parking`).
 
-### 1. 전체 프로젝트 컴파일
+---
+
+### **Ch11. 싱글톤 View 리스트 기반 화면 라우팅 (`TodoMain`, `StudentMain`)**
+* **핵심 키워드**: `List<View>`, `pathIndex`, 싱글톤 View 재사용
+* **주요 내용**:
+  * `HomeView`, `RegisterView`, `ListView`를 각각 싱글톤(`getHomeView()` 등)으로 만들어 `viewList`에 등록.
+  * `while (running)` 루프 안에서 `viewList.get(pathIndex).show()`를 실행하고, 메뉴 선택에 따라 `pathIndex`(0, 1, 2)만 변경하여 화면을 전환하는 패턴.
+
+---
+
+### **Ch12. 컬렉션 프레임워크 심화 & 연결 리스트 직접 구현 (`CollectionMain01 ~ 09`)**
+* **핵심 키워드**: `List`, `Set`, `Map`, `Node<E>`, `CustomLinkedList`, `RuntimeException`, `entrySet()`
+* **주요 내용**:
+  1. **컬렉션 3대 인터페이스**:
+     * **`List` (`ArrayList`, `LinkedList`)**: 순서(인덱스) 있음, 데이터 중복 허용.
+     * **`Set` (`HashSet`, `TreeSet`)**: 순서 없음, **데이터 중복 불가** (`TreeSet`은 자동 정렬).
+     * **`Map` (`HashMap`, `LinkedHashMap`, `TreeMap`)**: **`Key : Value` 쌍**으로 저장 (Key는 중복 불가, `TreeMap`은 Key 기준 정렬).
+  2. **`CustomLinkedList<E>` 직접 구현 (`CollectionMain02`)**:
+     * 내부 정적 클래스 `Node<E>`에 `item`(값)과 `next`(다음 노드 주소)를 두고 `head`와 `tail`을 이어 붙이는 단방향 연결 리스트 구현.
+  3. **커스텀 예외 (`CollectionMain04`)**: `RuntimeException`을 상속받아 사용자 정의 예외 클래스 생성 및 `throw` 실습.
+  4. **중첩 컬렉션 & `entrySet()` (`CollectionMain09`)**:
+     * `List<Map<String, Map<...>>>` 구조에서 `keySet()` 중첩 반복문과 `(Student)` 다운캐스팅으로 내부 객체 데이터 추출.
+     * `Map.Entry<K, V>`와 `ages.entrySet()`을 사용해 Key와 Value를 동시에 순회.
+
+---
+
+### **Ch13. 익명 클래스(Anonymous Class) & 람다식(Lambda) (`AnonymousClass01~02`, `Lambda01~03`)**
+* **핵심 키워드**: 일회성 익명 구현 객체, `@FunctionalInterface`, 람다 축약 규칙, 표준 함수형 인터페이스 5종
+* **주요 내용**:
+  1. **익명 클래스 (`AnonymousClass01~02`)**: 재사용하지 않고 1회성으로 쓸 인터페이스/추상클래스(예: 버튼 클릭 이벤트 `MouseEvent`)를 별도 클래스 파일 없이 `new 인터페이스() { @Override ... }`로 즉석 생성.
+  2. **람다식 문법 규칙 (`Lambda01~02`)**:
+     * **사용 조건**: 인터페이스에 **추상 메서드가 딱 1개**만 있어야 함.
+     * 기본 형태: `(매개변수) -> { 실행문; }`
+     * 실행문이 1줄이면 `{}` 생략 가능, `return`문 1줄이면 `{}`와 `return`을 함께 생략 가능.
+  3. **자바 내장 함수형 인터페이스 5종 (`Lambda03`)**:
+     * **`Runnable`**: `() -> void` (매개변수 X, 반환값 X / `.run()`)
+     * **`Supplier<T>`**: `() -> T` (매개변수 X, 값 공급 / `.get()`)
+     * **`Consumer<T>`**: `T -> void` (매개변수 소비, 반환값 X / `.accept(t)`)
+     * **`Function<T, R>`**: `T -> R` (T를 받아 R로 변환 / `.apply(t)`)
+     * **`Predicate<T>`**: `T -> boolean` (조건이 맞는지 판별 / `.test(t)`)
+
+---
+
+### **Ch14. Stream API & `CustomStream<T>` 구현 (`Stream01 ~ 03`)**
+* **핵심 키워드**: `stream()`, 중간 연산(`filter`, `map`), 최종 연산(`toList`, `forEach`), `CustomStream`
+* **주요 내용**:
+  * **Stream 파이프라인 3단계**: `생성(stream())` → `중간 연산(filter, map)` → `최종 연산(toList())`. (스트림은 1회용이며 원본 데이터를 변경하지 않음).
+  * **주요 연산**:
+    * `.filter(n -> 조건식)`: 조건(`Predicate`)이 `true`인 요소만 걸러냄.
+    * `.map(n -> 변환식)`: 요소를 다른 값이나 DTO 객체(`User` → `UserDto`)로 변환(`Function`).
+  * **`CustomStream<T>` 직접 구현 (`Stream03`)**: 제네릭 클래스에 `filter(Predicate<T>)`와 `map(Function<T, R>)`을 직접 만들어보며 스트림 체이닝 동작 원리 이해.
+
+---
+
+### **🌐 Servlet 웹 서버 & 🗄️ MySQL(JDBC) 데이터베이스 연동 (`servlet-study-basic`, `servlet-jdbc-study`)**
+* **핵심 키워드**: `@WebServlet`, `doGet/doPost`, `forward`, `Jackson`, `Filter`, `DriverManager`, `PreparedStatement`, `ResultSet`
+* **주요 내용**:
+  1. **Servlet MVC & REST API**:
+     * **생명주기**: `init()`(최초 1회) → `doGet()` / `doPost()`(요청마다 실행) → `destroy()`(종료 시 1회).
+     * **View 포워딩**: `req.setAttribute()`로 데이터를 담고 `req.getRequestDispatcher("/WEB-INF/views/...jsp").forward(req, resp)`로 JSP 화면 출력.
+     * **JSON REST API**: `Jackson ObjectMapper`로 요청 JSON을 객체로 읽고(`readValue`), 응답 객체를 JSON으로 변환.
+     * **공통 필터**: `Utf8EncodingFilter`(한글 인코딩 처리), `CorsFilter`(프론트엔드 CORS 허용).
+  2. **MySQL + IntelliJ Java JDBC 연동 (`database/DBConnectionTest.java`, `Menu.java`)**:
+     * **URL 형식**: `jdbc:mysql://localhost:3306/hanip_delivery02`
+     * **`try-with-resources`**: `try (Connection conn = DriverManager.getConnection(...))`를 사용하여 DB 작업이 끝나면 **커넥션 객체를 자동으로 소멸(`close`)**시켜 다른 연결이 가능하도록 보장.
+     * **쿼리 실행 및 `ResultSet` 매핑**:
+       ```java
+       try (Connection connection = DriverManager.getConnection(url, username, password)) {
+           PreparedStatement pstmt = connection.prepareStatement("select * from menus");
+           ResultSet rs = pstmt.executeQuery(); // 조회 결과를 rs에 담음
+
+           while (rs.next()) { // 다음 행(Row)을 한 줄씩 가져오며 Menu 객체 생성
+               Menu menu = new Menu(
+                       rs.getInt("menu_id"),
+                       rs.getInt("restaurant_id"),
+                       rs.getString("name"),
+                       rs.getInt("price"),
+                       rs.getString("description"),
+                       rs.getBoolean("is_signature"),
+                       rs.getBoolean("is_sold_out")
+               );
+               menus.add(menu);
+           }
+       }
+       ```
+
+---
+
+## 🚀 실행 방법
+
 ```bash
+# 전체 컴파일
 mvn clean compile
-```
 
-### 2. 신규 실전 프로젝트 실행
-
-#### 📌 [Ch02 Practice] 간이 메모장 애플리케이션 실행
-```bash
+# [Ch02] 메모장 앱 실행
 mvn exec:java -Dexec.mainClass="com.korai.ch02.practice.MemoApplication"
-```
 
-#### 📌 [Ch10 TODO] 콘솔 풀스택 Todo 애플리케이션 실행
-```bash
+# [Ch10] 콘솔 Todo 앱 실행
 mvn exec:java -Dexec.mainClass="com.korai.ch10.TODO.TodoApplication"
 ```
-* **테스트 기본 계정**: 
-  * 아이디: `test` / 비밀번호: `1234` (또는 신규 가입)
-* **주요 기능 체험**:
-  1. 로그인 및 UUID 세션 발급
-  2. 내 할 일 등록 (`todo-register`)
-  3. 내 할 일 목록 조회 (`todo-list`)
-  4. 3색 상태 스티커 변경 (`todo-status`: 진행전 $\rightarrow$ 진행중 $\rightarrow$ 완료)

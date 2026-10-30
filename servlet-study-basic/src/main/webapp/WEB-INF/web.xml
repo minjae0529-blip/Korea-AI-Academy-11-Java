@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ↑ "이 파일은 XML 문서이고 글자는 UTF-8이다"라는 선언. 항상 맨 첫 줄에 씀 -->
+
+<!-- web-app = 이 웹 프로젝트 전체 설정을 감싸는 가장 큰 태그 (모든 설정은 이 안에 들어감) -->
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    <!-- ↑ xmlns, xsi:schemaLocation = "이 문서는 Java EE 웹 설정 규칙을 따른다"는 표시
+           (규칙서 주소예요. 외울 필요 없고, IntelliJ가 자동으로 써줍니다)
+         version="4.0" = 서블릿 4.0 버전 규칙 사용 (Tomcat 9과 짝꿍) -->
+
+    <!-- ===== 1단계: 서블릿 등록 ===== -->
+    <!-- "이 클래스를 서블릿으로 쓰겠다"고 톰캣에게 알려주는 부분 -->
+    <servlet>
+        <!-- 서블릿의 이름표. 아래 servlet-mapping과 연결할 때 쓰는 이름 (아무 이름이나 가능) -->
+        <servlet-name>firstServlet</servlet-name>
+
+        <!-- 실제로 실행될 자바 클래스. 패키지 이름까지 정확히 적어야 함 (틀리면 ClassNotFoundException) -->
+        <servlet-class>com.korai.servletstudy.FirstServlet</servlet-class>
+    </servlet>
+
+
+    <!-- ===== 2단계: 주소 연결 ===== -->
+    <!-- "이 주소로 요청이 오면 위에서 등록한 서블릿을 실행해라"고 연결하는 부분 -->
+
+    <servlet-mapping>
+        <!-- 위 <servlet>에서 붙인 이름표와 "글자가 똑같아야" 서로 연결됨 (대소문자도 구분) -->
+        <servlet-name>firstServlet</servlet-name>
+
+        <!-- 연결할 주소. 주소 끝이 /first면 → firstServlet 이름표 → FirstServlet 클래스 실행
+             예: http://localhost:8080/servlet_study_war_exploded/first
+             ⚠️ 반드시 / 로 시작해야 함 -->
+        <url-pattern>/first</url-pattern>
+
+    </servlet-mapping>
+
+    <!-- 정리: 주소(/first) → 이름표(firstServlet) → 클래스(FirstServlet) 순서로 찾아감
+         같은 일을 FirstServlet 클래스 위에 @WebServlet("/first") 한 줄로도 할 수 있어요.
+         ⚠️ 단, 두 방법으로 같은 주소를 동시에 등록하면 서버 시작할 때 에러가 나요 -->
+
+</web-app>

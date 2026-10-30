@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>   <!-- XML 문서 선언 -->
+
+<!-- project = pom.xml 전체를 감싸는 가장 큰 태그. 윗부분 주소들은 "Maven 규칙을 따른다"는 표시 -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>   <!-- pom 문서 형식 버전. 항상 4.0.0 고정 -->
+
+    <!-- ===== 내 프로젝트의 신분증 ===== -->
+    <groupId>com.korai</groupId>               <!-- 만든 단체/회사 이름 (보통 도메인을 거꾸로 씀) -->
+    <artifactId>servlet-study</artifactId>     <!-- 프로젝트 이름 -->
+    <version>1.0-SNAPSHOT</version>            <!-- 버전. SNAPSHOT = "아직 개발 중" -->
+    <name>servlet-study</name>                 <!-- 사람이 읽기 좋은 표시용 이름 -->
+    <packaging>war</packaging>
+    <!-- ↑ 완성품을 어떤 파일로 묶을지
+         jar = 일반 자바 프로그램 묶음
+         war = 웹 프로그램 묶음 (Web ARchive). 톰캣은 war를 받아서 실행해요 -->
+
+    <!-- ===== 설정값 모음 (변수처럼 씀) ===== -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  <!-- 소스 파일 글자 인코딩 → 한글 주석 안 깨짐 -->
+        <maven.compiler.target>1.8</maven.compiler.target>   <!-- 자바 8 버전용으로 컴파일 -->
+        <maven.compiler.source>1.8</maven.compiler.source>   <!-- 자바 8 문법까지 사용 (switch -> 같은 최신 문법은 안 됨) -->
+        <junit.version>5.14.4</junit.version>                <!-- 아래에서 ${junit.version}으로 꺼내 쓰는 변수 -->
+    </properties>
+
+    <!-- ===== 필요한 라이브러리(남이 만든 코드 묶음) 목록 ===== -->
+    <!-- 여기 적으면 Maven이 인터넷에서 자동으로 다운로드해줌 -->
+    <dependencies>
+        <!-- ★ 서블릿 라이브러리: HttpServlet, HttpServletRequest 등이 여기 들어 있음 -->
+        <dependency>
+            <groupId>javax.servlet</groupId>              <!-- javax = Tomcat 9 이하용 -->
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>                       <!-- 서블릿 4.0 = Tomcat 9과 짝꿍 -->
+            <scope>provided</scope>
+            <!-- ↑ provided = "실행할 때는 톰캣이 이미 갖고 있으니, 코드 작성/컴파일할 때만 써라"
+                 war 파일에 넣지 않아서 톰캣 것과 충돌하지 않음 -->
+        </dependency>
+
+        <!-- JUnit: 코드가 제대로 동작하는지 검사하는 "테스트용" 도구 (지금은 안 써도 됨) -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>    <!-- 테스트 코드를 "작성"할 때 쓰는 부분 -->
+            <version>${junit.version}</version>            <!-- 위 properties의 5.14.4를 꺼내 씀 -->
+            <scope>test</scope>                            <!-- test = 테스트할 때만 사용, 완성품엔 안 들어감 -->
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId> <!-- 테스트 코드를 "실행"하는 부분 -->
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- ===== 완성품 만드는(빌드) 방법 설정 ===== -->
+    <build>
+        <plugins>
+            <!-- war 파일을 만들어주는 도구 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
